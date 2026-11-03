@@ -101,6 +101,39 @@ Studio needs. It cannot read private repositories, change account settings,
 or spend money. If it ever leaks, delete it on that page and the key stops
 working immediately.
 
+## Moving to your own domain
+
+Do this **before** setting her up, so she only ever signs in once.
+
+1. In the repository, go to **Settings** then **Pages**, and enter the domain
+   under *Custom domain*. GitHub writes a `CNAME` file for you.
+
+2. At your registrar, point the domain at GitHub Pages:
+
+   | Record | Name | Value |
+   |---|---|---|
+   | A | `@` | `185.199.108.153` |
+   | A | `@` | `185.199.109.153` |
+   | A | `@` | `185.199.110.153` |
+   | A | `@` | `185.199.111.153` |
+   | CNAME | `www` | `zaddywebbuilds.github.io` |
+
+3. Wait for it to propagate, which is usually under an hour, then come back
+   to **Settings / Pages** and tick **Enforce HTTPS**.
+
+   Do not skip this. Without it the access key would travel over plain
+   HTTP, where it can be read in transit.
+
+### What the move does to signing in
+
+The key itself does not care about the domain; it is tied to the
+repository. But browsers store it per address, so anyone already signed in
+on the `github.io` address is signed out once when the domain changes, and
+has to paste the key one more time. After that it sticks as before.
+
+Nothing else needs changing. The 404 page works out its own address at
+runtime, and everything else uses relative paths.
+
 ## Where things live
 
 - `data/products.json` is the catalogue Studio writes.
