@@ -16,6 +16,20 @@
   /* ---------- helpers ---------- */
   function src(p, i) { return IMG + p.slug + '/' + p.images[i]; }
   function thumb(p, i) { return IMG + p.slug + '/thumb/' + p.images[i]; }
+
+  // Both sizes are offered so the browser can pick. A card is about 335px
+  // wide on a phone, which needs 670 to 1005 real pixels on a 2x or 3x
+  // screen, well past what the 440px thumbnail holds. Low-density screens
+  // still get the small one.
+  function srcset(p, i) {
+    return esc(thumb(p, i)) + ' 440w, ' + esc(src(p, i)) + ' 810w';
+  }
+  // Measured against the real grid rather than guessed: one column on a
+  // phone, two by 860px, three by 1200px, four above that. Overstating
+  // these makes low-density screens fetch the large file for nothing.
+  var CARD_SIZES = '(max-width:480px) calc(100vw - 40px), ' +
+                   '(max-width:860px) 45vw, (max-width:1200px) 29vw, 22vw';
+  var FEAT_SIZES = '(max-width:860px) 66vw, 27vw';
   function naira(n) { return '₦' + n.toLocaleString('en-NG'); }
   function priceLabel(p) {
     return p.priceHigh ? naira(p.priceLow) + ' – ' + naira(p.priceHigh) : naira(p.priceLow);
@@ -143,11 +157,18 @@
     var v = document.getElementById('heroVideo');
     if (!v || reduced) return;
 
-    var url = v.getAttribute('data-src');
+    // The film panel is only about 375px wide on a phone, where the smaller
+    // encode is still sharp and costs a third as much data. Desktops, where
+    // the panel is twice that, get the full resolution.
+    var small = v.getAttribute('data-src-small');
+    var url = (small && window.matchMedia('(max-width: 900px)').matches)
+      ? small
+      : v.getAttribute('data-src');
     if (!url) return;
 
     function load() {
       v.removeAttribute('data-src');
+      v.removeAttribute('data-src-small');
       v.preload = 'auto';
       v.src = url;
       var go = v.play();
@@ -217,7 +238,8 @@
       card.dataset.slug = p.slug;
       card.innerHTML =
         '<div class="fcard__media">' +
-          '<img src="' + esc(thumb(p, 0)) + '" alt="' + esc(p.name) +
+          '<img src="' + esc(thumb(p, 0)) + '" srcset="' + srcset(p, 0) +
+            '" sizes="' + FEAT_SIZES + '" alt="' + esc(p.name) +
             '" width="440" height="587" loading="lazy" decoding="async">' +
         '</div>' +
         '<div class="fcard__foot">' +
@@ -288,10 +310,12 @@
       var imgHtml = shots.map(function (f, i) {
         // only the cover loads up front; the rest hold a blank pixel until hover
         if (i === 0) {
-          return '<img src="' + esc(thumb(p, 0)) + '" alt="' + esc(p.name) +
+          return '<img src="' + esc(thumb(p, 0)) + '" srcset="' + srcset(p, 0) +
+                 '" sizes="' + CARD_SIZES + '" alt="' + esc(p.name) +
                  '" width="440" height="587" loading="lazy" decoding="async" class="is-on">';
         }
         return '<img src="' + BLANK + '" data-src="' + esc(thumb(p, i)) +
+               '" data-srcset="' + srcset(p, i) + '" sizes="' + CARD_SIZES +
                '" alt="" width="440" height="587" decoding="async" aria-hidden="true">';
       }).join('');
       var dotHtml = shots.map(function (_, i) {
@@ -333,6 +357,8 @@
         for (var k = 0; k < imgs.length; k++) {
           var ds = imgs[k].getAttribute('data-src');
           if (ds) {
+            var dss = imgs[k].getAttribute('data-srcset');
+            if (dss) { imgs[k].srcset = dss; imgs[k].removeAttribute('data-srcset'); }
             imgs[k].src = ds;
             imgs[k].removeAttribute('data-src');
             imgs[k].removeAttribute('aria-hidden');
