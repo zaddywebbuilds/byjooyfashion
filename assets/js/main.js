@@ -283,7 +283,7 @@
           '<a class="pcard__wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' +
             waIcon() + 'Order' +
           '</a>' +
-          '<button class="pcard__view" type="button">View ' + p.images.length + '</button>' +
+          '<button class="pcard__view" type="button">View all ' + p.images.length + ' images</button>' +
         '</div>';
 
       var media = card.querySelector('.pcard__media');
@@ -427,7 +427,7 @@
         '<figcaption>' +
           '<span>Colourway ' + pad(i + 1) + '</span>' +
           '<a class="lb__wa" href="' + waLink(p, i + 1) + '" target="_blank" rel="noopener">' +
-            waIcon() + 'Order this one' +
+            waIcon() + 'Order this colour' +
           '</a>' +
         '</figcaption>';
       lbGrid.appendChild(fig);
@@ -511,6 +511,18 @@
     });
   }
 
+  function buildFootStrip() {
+    var wrap = document.getElementById('footStrip');
+    if (!wrap) return;
+    // one cover from each of the first eight styles
+    P.slice(0, 8).forEach(function (p) {
+      if (!p.images || !p.images.length) return;
+      var fig = el('figure');
+      fig.innerHTML = '<img src="' + thumb(p, 0) + '" alt="" loading="lazy" decoding="async">';
+      wrap.appendChild(fig);
+    });
+  }
+
   function initFooter() {
     document.getElementById('yr').textContent = new Date().getFullYear();
     if (reduced) return;
@@ -545,11 +557,15 @@
       ['adire-long-skirt-set', 1],
       ['adire-backless-gown', 2]
     ]);
-    fillArt('orderArt', [['adire-asoke-2-piece-set', 12]]);
+    fillArt('orderArt', [
+      ['adire-asoke-2-piece-set', 12],
+      ['adire-2-piece-set', 8]
+    ]);
     statementReveal();
     initCursor();
     initMagnet();
     initNav();
+    buildFootStrip();
     initFooter();
     revealAll();
     ScrollTrigger.refresh();
