@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Page not found &middot; ByJooy</title>
-<link rel="icon" href="/byjooyfashion/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/byjooyfashion/assets/fonts/fonts.css">
+<script>
+/* This page is served for any wrong address, at any depth, so relative
+   paths cannot be trusted. It also has to survive the move to a custom
+   domain, where the site sits at the root rather than under /<repo>/.
+   So work the root out at runtime instead of writing it in. */
+var BYJOOY_ROOT = /\.github\.io$/i.test(location.hostname)
+  ? '/' + location.pathname.split('/')[1] + '/'
+  : '/';
+document.write(
+  '<link rel="icon" href="' + BYJOOY_ROOT + 'favicon.svg" type="image/svg+xml">' +
+  '<link rel="stylesheet" href="' + BYJOOY_ROOT + 'assets/fonts/fonts.css">'
+);
+</script>
 <style>
   :root{
     --ink:#140F11; --bone:#FDF6F7; --rose-dp:#8F5456; --green:#0F6B45;
@@ -47,9 +58,10 @@
     <h1>This page <em>slipped</em> away</h1>
     <p>The link may be old, or the address slightly off. The collection is all still here.</p>
     <div class="row">
-      <a class="solid" href="/byjooyfashion/">Back to the collection</a>
+      <a class="solid" id="homeLink" href="/">Back to the collection</a>
       <a class="wa" href="https://wa.me/2349038800195" target="_blank" rel="noopener">Message us</a>
     </div>
   </div>
+  <script>document.getElementById('homeLink').href = BYJOOY_ROOT;</script>
 </body>
 </html>
