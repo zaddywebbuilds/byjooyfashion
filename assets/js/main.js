@@ -131,21 +131,6 @@
       }, 4200);
     }
 
-    // word swap behind the card
-    var ghost = document.getElementById('ghostWord');
-    if (ghost && !reduced) {
-      var words = ['ADIRE', 'LAGOS', 'BYJOOY', 'DYED'], gi = 0;
-      setInterval(function () {
-        gi = (gi + 1) % words.length;
-        gsap.to(ghost, {
-          opacity: 0, y: -24, duration: .4, ease: 'power2.in',
-          onComplete: function () {
-            ghost.textContent = words[gi];
-            gsap.fromTo(ghost, { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .55, ease: 'power2.out' });
-          }
-        });
-      }, 4200);
-    }
   }
 
   function heroZoom() {
@@ -155,17 +140,19 @@
 
     var bezel = card.querySelector('.hero__bezel');
     var screen = card.querySelector('.hero__screen');
-    // UI that should stay visually constant while the photo zooms
-    var ui = card.querySelectorAll('.hero__chrome, .hero__type, .hero__panel, .hero__scrollHint');
+    var intro = document.getElementById('heroIntro');
+    var hint = document.getElementById('heroHint');
 
-    function coverScale() {
-      var r = card.getBoundingClientRect();
-      var w = r.width / (gsap.getProperty(card, 'scaleX') || 1);
-      var h = r.height / (gsap.getProperty(card, 'scaleY') || 1);
-      return Math.max(window.innerWidth / w, window.innerHeight / h);
+    // The card sits below the headline, so as it scales up it also has to
+    // travel to the middle of the viewport or it grows off the bottom.
+    var fit = { s: 1, dy: 0 };
+    function measure() {
+      var w = card.offsetWidth, h = card.offsetHeight;
+      if (!w || !h) return;
+      fit.s = Math.max(window.innerWidth / w, window.innerHeight / h);
+      fit.dy = (window.innerHeight / 2) - (card.offsetTop + h / 2);
     }
-
-    var S = coverScale();
+    measure();
 
     var tl = gsap.timeline({
       scrollTrigger: {
@@ -177,14 +164,20 @@
       }
     });
 
-    tl.fromTo(card, { scale: 1 }, { scale: function () { return S; }, ease: 'none' }, 0)
+    tl.fromTo(card,
+        { scale: 1, y: 0 },
+        {
+          scale: function () { return fit.s; },
+          y: function () { return fit.dy; },
+          ease: 'none'
+        }, 0)
       .fromTo(bezel, { padding: 10, borderRadius: 26 }, { padding: 0, borderRadius: 0, ease: 'none' }, 0)
       .fromTo(screen, { borderRadius: 18 }, { borderRadius: 0, ease: 'none' }, 0)
-      .fromTo(ui, { scale: 1 }, { scale: function () { return 1 / S; }, ease: 'none' }, 0)
-      .to('.hero__bg, .hero__ghost', { opacity: 0, ease: 'none' }, 0)
-      .to('.hero__scrollHint', { opacity: 0, ease: 'none', duration: .25 }, 0);
+      .to(intro, { opacity: 0, y: -50, ease: 'none', duration: .45 }, 0)
+      .to('.hero__bg', { opacity: 0, ease: 'none' }, 0)
+      .to(hint, { opacity: 0, ease: 'none', duration: .2 }, 0);
 
-    ScrollTrigger.addEventListener('refreshInit', function () { S = coverScale(); });
+    ScrollTrigger.addEventListener('refreshInit', measure);
   }
 
   /* ============================================================
@@ -241,10 +234,10 @@
       card.dataset.slug = p.slug;
       card.innerHTML =
         '<div class="fcard__media">' +
-          '<span class="fcard__num">' + pad(i + 1) + '</span>' +
           '<img src="' + src(p, 0) + '" alt="' + p.name + '" loading="lazy">' +
         '</div>' +
         '<div class="fcard__foot">' +
+          '<span class="fcard__num">' + pad(i + 1) + '</span>' +
           '<span class="fcard__name">' + p.name + '</span>' +
           '<span class="fcard__price">' + priceLabel(p) + '</span>' +
         '</div>';
@@ -309,16 +302,18 @@
       }).join('');
 
       card.innerHTML =
-        '<div class="pcard__media">' +
+        '<div class="pcard__media">' + imgHtml + '</div>' +
+        '<span class="pcard__dots">' + dotHtml + '</span>' +
+        '<div class="pcard__foot">' +
+          '<span class="pcard__id">' +
+            '<span class="pcard__name">' + p.name + '</span>' +
+            '<span class="pcard__sizes">Sizes ' + p.sizes + '</span>' +
+          '</span>' +
+          '<span class="pcard__price">' + priceLabel(p) + '</span>' +
+        '</div>' +
+        '<div class="pcard__meta">' +
           '<span class="pcard__tag">' + p.tag + '</span>' +
           '<span class="pcard__badge">' + p.images.length + ' colourways</span>' +
-          imgHtml +
-          '<span class="pcard__dots">' + dotHtml + '</span>' +
-        '</div>' +
-        '<div class="pcard__foot">' +
-          '<span><span class="pcard__name">' + p.name + '</span>' +
-          '<span class="pcard__sizes">Sizes ' + p.sizes + '</span></span>' +
-          '<span class="pcard__price">' + priceLabel(p) + '</span>' +
         '</div>';
 
       var media = card.querySelector('.pcard__media');
@@ -419,15 +414,15 @@
     document.getElementById('lbCount').textContent = p.images.length;
 
     var order = document.getElementById('lbOrder');
-    order.href = 'https://wa.me/2348000000000?text=' +
+    order.href = 'https://wa.me/2349038800195?text=' +
       encodeURIComponent('Hi ByJooy, I would like to order the ' + p.name + '.');
 
     lbGrid.innerHTML = '';
     p.images.forEach(function (f, i) {
       var fig = el('figure');
-      fig.innerHTML = '<img src="' + IMG + p.slug + '/' + f + '" alt="' + p.name +
-                      ' colourway ' + (i + 1) + '" loading="lazy">' +
-                      '<figcaption>' + pad(i + 1) + '</figcaption>';
+      fig.innerHTML = '<span class="lb__shot"><img src="' + IMG + p.slug + '/' + f +
+                      '" alt="' + p.name + ' colourway ' + (i + 1) + '" loading="lazy"></span>' +
+                      '<figcaption>Colourway ' + pad(i + 1) + '</figcaption>';
       lbGrid.appendChild(fig);
     });
 
