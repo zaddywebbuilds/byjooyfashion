@@ -26,24 +26,24 @@
   <form class="gate__card" id="loginForm">
     <span class="gate__mark">ByJooy</span>
     <h1>Studio</h1>
-    <p>Paste your access key to sign in.</p>
+    <p>Enter your access key once and this device will remember it.</p>
 
     <label>
       <span>Access key</span>
       <input type="password" id="token" autocomplete="current-password"
-             placeholder="github_pat_..." required>
+             placeholder="Paste it here" required>
     </label>
 
     <label class="check">
       <input type="checkbox" id="remember" checked>
-      <span>Stay signed in on this device</span>
+      <span>Remember me on this device</span>
     </label>
 
     <button class="btn btn--solid" type="submit" id="loginBtn">Sign in</button>
     <p class="gate__err" id="loginErr" hidden></p>
     <p class="gate__hint">
-      Your key was given to you when the site was set up. If you have lost it,
-      a new one can be made in a minute. Never share it with anyone.
+      You only do this once per phone or laptop. Keep the key private, the
+      same way you would a password.
     </p>
   </form>
 </div>

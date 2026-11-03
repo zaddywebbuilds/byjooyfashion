@@ -32,9 +32,9 @@
       return r.json().then(function (j) {
         if (!r.ok) {
           var m = j && j.message ? j.message : 'GitHub returned ' + r.status;
-          if (r.status === 401) m = 'That token was rejected. Check it was copied in full.';
-          if (r.status === 403) m = 'That token does not have permission to write to this repository.';
-          if (r.status === 404) m = 'Repository not found, or the token cannot see it.';
+          if (r.status === 401) m = 'That key was not accepted. Check it was copied in full, and that it has not expired.';
+          if (r.status === 403) m = 'That key is not allowed to save changes to this site.';
+          if (r.status === 404) m = 'That key cannot see this site’s repository.';
           var e = new Error(m);
           e.status = r.status;
           throw e;
@@ -44,18 +44,38 @@
     });
   };
 
-  /* ---- who am I, and can I write here ---- */
+  /* ------------------------------------------------------------
+     Who am I, and can I actually write here.
+
+     repo.permissions reflects the *account's* rights, not the
+     token's, so a read-only token on your own repo still reports
+     push: true. The only honest test is to write something, so we
+     create a loose blob. It is never referenced by a commit, stays
+     invisible in the repository and is garbage collected, but it
+     fails immediately if the token lacks Contents: write.
+     ------------------------------------------------------------ */
   GH.prototype.check = function () {
     var self = this;
-    return this.req('/user').then(function (user) {
-      return self.req('/repos/' + self.owner + '/' + self.repo).then(function (repo) {
-        if (!repo.permissions || !repo.permissions.push) {
-          throw new Error('That token can read the repository but not write to it. ' +
-                          'It needs Contents: Read and write.');
-        }
-        return { login: user.login, repo: repo.full_name };
+    var who;
+    return this.req('/user')
+      .then(function (user) {
+        who = user.login;
+        return self.req('/repos/' + self.owner + '/' + self.repo);
+      })
+      .then(function (repo) {
+        return self.req('/repos/' + self.owner + '/' + self.repo + '/git/blobs', {
+          method: 'POST',
+          body: { content: 'byjooy studio access check', encoding: 'utf-8' }
+        }).then(function () {
+          return { login: who, repo: repo.full_name };
+        }).catch(function (e) {
+          if (e.status === 403 || e.status === 404) {
+            throw new Error('This key can see the repository but cannot save to it. ' +
+                            'It needs the Contents permission set to Read and write.');
+          }
+          throw e;
+        });
       });
-    });
   };
 
   /* ---- read the catalogue ---- */
