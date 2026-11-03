@@ -28,9 +28,25 @@ assets/
   img/<slug>/*.webp     full size, used in the lightbox
   img/<slug>/thumb/     440px versions, used on cards
   video/hero.mp4        hero film, muted and looping
+  vendor/               GSAP, ScrollTrigger, Lenis
+  fonts/                Bodoni Moda and Inter, with fonts.css
 build-data.ps1          regenerates both catalogue files from the folders
 SETUP.md                making her an access key
 ```
+
+## No outside services
+
+Everything the site needs is in this repository. Fonts and the animation
+libraries are served from `assets/`, not from Google or a CDN, so the page
+makes **zero external requests**. That is one less thing to break, a little
+faster (no extra DNS and TLS handshakes), and it keeps working on networks
+that block those hosts.
+
+The only outside call anywhere is `api.github.com`, and only from the Studio
+dashboard when she saves.
+
+To update a vendored library, replace the file in `assets/vendor/`. Current
+versions: GSAP 3.12.5, ScrollTrigger 3.12.5, Lenis 1.1.13.
 
 ## Where the catalogue comes from
 
