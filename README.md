@@ -70,8 +70,10 @@ in the JSON-LD block. Search for `2349038800195` to change all of them at once.
 
 ## Before going live
 
-- The Instagram handle (`instagram.com/byjooy`) is a guess. Search for
-  `instagram.com` in `index.html` and correct it if it is wrong.
+- Facebook is live (`facebook.com/61595328153182`), linked in the order section
+  and the footer and listed under `sameAs` in the JSON-LD. Instagram and TikTok
+  handles are still outstanding; add them beside the Facebook link in those
+  same three places when they arrive.
 - Photos are 810x1080 straight off the phone. Fine as-is, but converting to
   WebP would cut the page weight meaningfully.
 
