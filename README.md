@@ -53,6 +53,37 @@ dashboard when she saves.
 To update a vendored library, replace the file in `assets/vendor/`. Current
 versions: GSAP 3.12.5, ScrollTrigger 3.12.5, Lenis 1.1.13.
 
+### Rebuilding the fonts
+
+The three files in `assets/fonts/` are subset from the upstream Google Fonts
+originals down to the characters this site renders, which is most of why the
+page is light. If a design change needs a character outside that set, add it
+to the unicode list and rebuild:
+
+```bash
+pip install fonttools brotli
+
+# originals
+curl -sL -o bodoni.ttf   'https://raw.githubusercontent.com/google/fonts/main/ofl/bodonimoda/BodoniModa%5Bopsz,wght%5D.ttf'
+curl -sL -o bodoni-i.ttf 'https://raw.githubusercontent.com/google/fonts/main/ofl/bodonimoda/BodoniModa-Italic%5Bopsz,wght%5D.ttf'
+curl -sL -o inter.ttf    'https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz,wght%5D.ttf'
+
+U='U+0020-007E,U+00A0-00FF,U+0131,U+0152-0153,U+2000-206F,U+20A6,U+20AC,U+2122'
+
+# Bodoni keeps its optical size axis, it runs 11px to 100px here.
+# Inter is pinned at 16, which is the only size range it is used at.
+python -m fontTools.varLib.instancer bodoni.ttf   opsz=14:96 wght=400:900 -o b.ttf
+python -m fontTools.varLib.instancer bodoni-i.ttf opsz=14:96 wght=400:900 -o bi.ttf
+python -m fontTools.varLib.instancer inter.ttf    opsz=16    wght=300:600 -o i.ttf
+
+for f in b:bodoni bi:bodoni-italic i:inter; do
+  python -m fontTools.subset "${f%%:*}.ttf" --unicodes="$U" --layout-features='*'     --flavor=woff2 --output-file="assets/fonts/${f##*:}.woff2"
+done
+```
+
+The naira sign is U+20A6 and the en dash U+2013; both are in the list above
+and both are used on every product. Check them after any rebuild.
+
 ## Where the catalogue comes from
 
 `data/products.json` is the live catalogue. The Studio dashboard rewrites it
