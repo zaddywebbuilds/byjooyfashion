@@ -1,31 +1,36 @@
 /* ============================================================
-   ByJooy Studio - add and edit pieces
+   ByJooy Studio
+
+   Edits are written straight to the site's GitHub repository as a
+   single commit, then GitHub Pages republishes. There is no server.
    ============================================================ */
 (function () {
   'use strict';
 
   var CFG = window.BYJOOY_CONFIG || {};
   var $ = function (id) { return document.getElementById(id); };
+  var KEY = 'byjooy.token';
 
-  var sb = null;
-  var rows = [];
-  var editing = null;   // the row being edited, or null for a new one
-  var shots = [];       // [{url} | {file, preview}]
-  var videoFile = null;
-  var videoUrl = null;
+  var gh = null;
+  var rows = [];        // the catalogue
+  var editing = null;   // row being edited, or null for new
+  var shots = [];       // [{name} existing | {name, full, thumb, preview} new]
+  var dragFrom = null;
 
-  /* ---------- small helpers ---------- */
+  /* ---------- helpers ---------- */
   function naira(n) { return '₦' + Number(n || 0).toLocaleString('en-NG'); }
 
   function priceLabel(r) {
-    return r.price_high ? naira(r.price_low) + ' - ' + naira(r.price_high) : naira(r.price_low);
+    return r.priceHigh ? naira(r.priceLow) + ' - ' + naira(r.priceHigh) : naira(r.priceLow);
   }
 
   function slugify(s) {
     return String(s).toLowerCase().trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 60) || 'piece';
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50) || 'piece';
+  }
+
+  function imgUrl(slug, name, thumb) {
+    return '../' + CFG.IMAGE_DIR + '/' + slug + '/' + (thumb ? 'thumb/' : '') + name;
   }
 
   var toastTimer;
@@ -35,11 +40,11 @@
     t.classList.toggle('is-bad', !!bad);
     t.hidden = false;
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3600);
   }
 
-  function showErr(nodeId, msg) {
-    var n = $(nodeId);
+  function showErr(id, msg) {
+    var n = $(id);
     if (!msg) { n.hidden = true; return; }
     n.textContent = msg;
     n.hidden = false;
@@ -48,47 +53,70 @@
   /* ============================================================
      BOOT
      ============================================================ */
-  if (!CFG.isConnected || !CFG.isConnected()) {
+  if (!CFG.REPO_OWNER || !CFG.REPO_NAME) {
     $('gateSetup').hidden = false;
     return;
   }
+  if (!window.ByJooyImages.webpSupported()) {
+    $('gateSetup').hidden = false;
+    $('gateSetup').querySelector('h1').textContent = 'This browser is too old';
+    $('gateSetup').querySelector('p').textContent =
+      'Studio needs a current browser to prepare photos. Please use Chrome, Edge, Safari or Firefox.';
+    return;
+  }
 
-  sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) { saved = null; }
 
-  sb.auth.getSession().then(function (res) {
-    if (res.data && res.data.session) enterApp();
-    else $('gateLogin').hidden = false;
-  });
+  if (saved) {
+    gh = new window.ByJooyGitHub(CFG, saved);
+    gh.check().then(enterApp).catch(function () {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      $('gateLogin').hidden = false;
+    });
+  } else {
+    $('gateLogin').hidden = false;
+  }
 
   /* ============================================================
-     AUTH
+     SIGN IN
      ============================================================ */
   $('loginForm').addEventListener('submit', function (e) {
     e.preventDefault();
     showErr('loginErr', '');
+    var token = $('token').value.trim();
+    if (!token) return;
+
     var btn = $('loginBtn');
     btn.disabled = true;
-    btn.textContent = 'Signing in';
+    btn.textContent = 'Checking';
 
-    sb.auth.signInWithPassword({
-      email: $('email').value.trim(),
-      password: $('password').value
-    }).then(function (res) {
+    var probe = new window.ByJooyGitHub(CFG, token);
+    probe.check().then(function (who) {
+      if ($('remember').checked) {
+        try { localStorage.setItem(KEY, token); } catch (e) {}
+      }
+      gh = probe;
       btn.disabled = false;
       btn.textContent = 'Sign in';
-      if (res.error) { showErr('loginErr', res.error.message); return; }
       $('gateLogin').hidden = true;
-      enterApp();
+      enterApp(who);
+    }).catch(function (err) {
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+      showErr('loginErr', err.message);
     });
   });
 
   $('signOut').addEventListener('click', function () {
-    sb.auth.signOut().then(function () { location.reload(); });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    location.reload();
   });
 
-  function enterApp() {
+  function enterApp(who) {
     $('gateLogin').hidden = true;
     $('app').hidden = false;
+    if (who && who.login) $('whoami').textContent = who.login;
     load();
   }
 
@@ -96,12 +124,14 @@
      LOAD + RENDER
      ============================================================ */
   function load() {
-    sb.from('products').select('*').order('position').order('created_at')
-      .then(function (res) {
-        if (res.error) { toast(res.error.message, true); return; }
-        rows = res.data || [];
-        render();
-      });
+    $('list').innerHTML = '<p class="loading">Loading the catalogue</p>';
+    gh.readJson(CFG.DATA_PATH).then(function (data) {
+      rows = Array.isArray(data) ? data : (window.BYJOOY_PRODUCTS || []);
+      render();
+    }).catch(function (err) {
+      $('list').innerHTML = '';
+      toast(err.message, true);
+    });
   }
 
   function render() {
@@ -111,21 +141,21 @@
     var photos = 0, hidden = 0;
     rows.forEach(function (r) {
       photos += (r.images || []).length;
-      if (!r.published) hidden++;
+      if (r.hidden) hidden++;
     });
     $('statStyles').textContent = rows.length;
     $('statPhotos').textContent = photos;
     $('statHidden').textContent = hidden;
     $('empty').hidden = rows.length > 0;
 
-    rows.forEach(function (r) {
-      var cover = (r.images && r.images[0]) || '';
+    rows.forEach(function (r, i) {
+      var cover = (r.images && r.images[0]) ? imgUrl(r.slug, r.images[0], true) : '';
       var card = document.createElement('article');
       card.className = 'item';
       card.innerHTML =
         '<div class="item__media">' +
           (cover ? '<img src="' + cover + '" alt="" loading="lazy">' : '') +
-          (r.published ? '' : '<span class="item__hidden">Hidden</span>') +
+          (r.hidden ? '<span class="item__hidden">Hidden</span>' : '') +
           '<span class="item__count">' + (r.images || []).length + ' photos</span>' +
         '</div>' +
         '<div class="item__body">' +
@@ -134,27 +164,64 @@
           '<span class="item__price">' + priceLabel(r) + '</span>' +
           '<div class="item__row">' +
             '<button class="btn btn--ghost" data-act="edit">Edit</button>' +
-            '<button class="btn btn--ghost" data-act="vis">' +
-              (r.published ? 'Hide' : 'Show') +
-            '</button>' +
+            '<button class="btn btn--ghost" data-act="vis">' + (r.hidden ? 'Show' : 'Hide') + '</button>' +
+          '</div>' +
+          '<div class="item__row">' +
+            '<button class="btn btn--ghost" data-act="up"' + (i === 0 ? ' disabled' : '') + '>Move up</button>' +
+            '<button class="btn btn--ghost" data-act="down"' + (i === rows.length - 1 ? ' disabled' : '') + '>Move down</button>' +
           '</div>' +
         '</div>';
-      // name via textContent so a quote in the name cannot break the markup
       card.querySelector('.item__name').textContent = r.name;
 
       card.querySelector('[data-act=edit]').addEventListener('click', function () { openForm(r); });
-      card.querySelector('[data-act=vis]').addEventListener('click', function () { toggleVis(r); });
+      card.querySelector('[data-act=vis]').addEventListener('click', function () {
+        r.hidden = !r.hidden;
+        publish([], (r.hidden ? 'hide ' : 'show ') + r.name);
+      });
+      card.querySelector('[data-act=up]').addEventListener('click', function () { move(i, -1); });
+      card.querySelector('[data-act=down]').addEventListener('click', function () { move(i, 1); });
       list.appendChild(card);
     });
   }
 
-  function toggleVis(r) {
-    sb.from('products').update({ published: !r.published }).eq('id', r.id)
-      .then(function (res) {
-        if (res.error) { toast(res.error.message, true); return; }
-        toast(r.published ? 'Hidden from the site' : 'Now showing on the site');
-        load();
-      });
+  function move(i, dir) {
+    var j = i + dir;
+    if (j < 0 || j >= rows.length) return;
+    var tmp = rows[i]; rows[i] = rows[j]; rows[j] = tmp;
+    render();
+    publish([], 'reorder the collection');
+  }
+
+  /* ============================================================
+     PUBLISH - write files and the catalogue in one commit
+     ============================================================ */
+  var busy = false;
+  function publish(files, what) {
+    if (busy) return Promise.resolve();
+    busy = true;
+
+    var bar = $('pubBar');
+    bar.hidden = false;
+    $('pubTxt').textContent = 'Preparing';
+
+    var all = files.concat([{
+      path: CFG.DATA_PATH,
+      content: JSON.stringify(rows, null, 2) + '\n'
+    }]);
+
+    return gh.commit(all, 'studio: ' + what, function (s) {
+      $('pubTxt').textContent = s;
+    }).then(function () {
+      busy = false;
+      bar.hidden = true;
+      toast('Saved. The website updates in a minute or two.');
+      return true;
+    }).catch(function (err) {
+      busy = false;
+      bar.hidden = true;
+      toast(err.message, true);
+      throw err;
+    });
   }
 
   /* ============================================================
@@ -163,23 +230,21 @@
   function openForm(r) {
     editing = r || null;
     shots = [];
-    videoFile = null;
-    videoUrl = r ? (r.video_url || null) : null;
 
     $('formTitle').textContent = r ? 'Edit piece' : 'New piece';
     $('fName').value = r ? r.name : '';
-    $('fPriceLow').value = r ? r.price_low : '';
-    $('fPriceHigh').value = r && r.price_high ? r.price_high : '';
+    $('fPriceLow').value = r ? r.priceLow : '';
+    $('fPriceHigh').value = r && r.priceHigh ? r.priceHigh : '';
     $('fSizes').value = r ? r.sizes : '6 - 18';
     $('fTag').value = r ? r.tag : 'Core';
     $('fNote').value = r ? (r.note || '') : '';
-    $('fPublished').checked = r ? !!r.published : true;
+    $('fHidden').checked = r ? !!r.hidden : false;
     $('deleteBtn').hidden = !r;
-    $('videoName').textContent = videoUrl ? 'video attached' : 'none';
     showErr('formErr', '');
-    $('prog').hidden = true;
 
-    if (r && r.images) r.images.forEach(function (u) { shots.push({ url: u }); });
+    if (r && r.images) {
+      r.images.forEach(function (n) { shots.push({ name: n, slug: r.slug }); });
+    }
     paintShots();
 
     $('sheet').hidden = false;
@@ -189,7 +254,6 @@
   function closeForm() {
     $('sheet').hidden = true;
     document.body.style.overflow = '';
-    shots.forEach(function (s) { if (s.preview) URL.revokeObjectURL(s.preview); });
     shots = [];
     editing = null;
   }
@@ -207,49 +271,60 @@
     var wrap = $('shots');
     wrap.innerHTML = '';
     shots.forEach(function (s, i) {
+      var url = s.preview || imgUrl(s.slug, s.name, true);
       var d = document.createElement('div');
       d.className = 'shot';
       d.draggable = true;
-      d.dataset.i = i;
       d.innerHTML =
-        '<img src="' + (s.url || s.preview) + '" alt="">' +
+        '<img src="' + url + '" alt="">' +
         (i === 0 ? '<span class="shot__cover">Cover</span>' : '') +
         '<span class="shot__n">' + (i + 1) + '</span>' +
         '<button class="shot__x" type="button" aria-label="Remove">&times;</button>';
 
       d.querySelector('.shot__x').addEventListener('click', function (e) {
         e.stopPropagation();
-        if (shots[i].preview) URL.revokeObjectURL(shots[i].preview);
         shots.splice(i, 1);
         paintShots();
       });
-
-      d.addEventListener('dragstart', function () {
-        d.classList.add('is-drag');
-        dragFrom = i;
-      });
+      d.addEventListener('dragstart', function () { d.classList.add('is-drag'); dragFrom = i; });
       d.addEventListener('dragend', function () { d.classList.remove('is-drag'); });
       d.addEventListener('dragover', function (e) { e.preventDefault(); });
       d.addEventListener('drop', function (e) {
         e.preventDefault();
         if (dragFrom === null || dragFrom === i) return;
-        var moved = shots.splice(dragFrom, 1)[0];
-        shots.splice(i, 0, moved);
+        shots.splice(i, 0, shots.splice(dragFrom, 1)[0]);
         dragFrom = null;
         paintShots();
       });
-
       wrap.appendChild(d);
     });
   }
-  var dragFrom = null;
 
   function addFiles(files) {
-    Array.prototype.forEach.call(files, function (f) {
-      if (!/^image\//.test(f.type)) return;
-      shots.push({ file: f, preview: URL.createObjectURL(f) });
+    var imgs = Array.prototype.filter.call(files, function (f) { return /^image\//.test(f.type); });
+    if (!imgs.length) return;
+
+    var prep = $('prepping');
+    prep.hidden = false;
+    var done = 0;
+    prep.textContent = 'Preparing photos, 0 of ' + imgs.length;
+
+    var chain = Promise.resolve();
+    imgs.forEach(function (f) {
+      chain = chain.then(function () {
+        return window.ByJooyImages.prepare(f).then(function (out) {
+          shots.push({ full: out.full, thumb: out.thumb, preview: out.preview });
+          done++;
+          prep.textContent = 'Preparing photos, ' + done + ' of ' + imgs.length;
+          paintShots();
+        }).catch(function () { done++; });
+      });
     });
-    paintShots();
+
+    chain.then(function () {
+      prep.hidden = true;
+      paintShots();
+    });
   }
 
   $('pickBtn').addEventListener('click', function () { $('fFiles').click(); });
@@ -266,148 +341,83 @@
     if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
   });
 
-  $('pickVideo').addEventListener('click', function () { $('fVideo').click(); });
-  $('fVideo').addEventListener('change', function (e) {
-    videoFile = e.target.files[0] || null;
-    $('videoName').textContent = videoFile ? videoFile.name : (videoUrl ? 'video attached' : 'none');
-  });
-
-  /* ---------- upload + save ---------- */
-  function uploadOne(file, slug) {
-    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    var path = slug + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
-    return sb.storage.from('media').upload(path, file, {
-      cacheControl: '31536000',
-      upsert: false
-    }).then(function (res) {
-      if (res.error) throw res.error;
-      return sb.storage.from('media').getPublicUrl(path).data.publicUrl;
-    });
-  }
-
+  /* ---------- save ---------- */
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
     showErr('formErr', '');
-
     if (!shots.length) { showErr('formErr', 'Add at least one photo.'); return; }
 
     var name = $('fName').value.trim();
-    var slug = editing ? editing.slug : slugify(name) + '-' + Math.random().toString(36).slice(2, 6);
+    var slug = editing ? editing.slug : uniqueSlug(slugify(name));
+    var files = [];
+    var names = [];
 
-    var pending = shots.filter(function (s) { return s.file; }).length + (videoFile ? 1 : 0);
-    var done = 0;
-    var save = $('saveBtn');
-    save.disabled = true;
-
-    if (pending) {
-      $('prog').hidden = false;
-      $('progBar').style.width = '0%';
-      $('progTxt').textContent = 'Uploading 0 of ' + pending;
-    }
-
-    function tick() {
-      done++;
-      $('progBar').style.width = Math.round((done / pending) * 100) + '%';
-      $('progTxt').textContent = 'Uploading ' + done + ' of ' + pending;
-    }
-
-    // upload new photos in order, keep already-hosted ones as they are
-    var chain = Promise.resolve();
-    var urls = [];
-    shots.forEach(function (s) {
-      chain = chain.then(function () {
-        if (s.url) { urls.push(s.url); return; }
-        return uploadOne(s.file, slug).then(function (u) { urls.push(u); tick(); });
-      });
+    shots.forEach(function (s, i) {
+      if (s.name && s.slug === slug) { names.push(s.name); return; }
+      // new upload, or a photo carried over from a renamed piece
+      var fname = slug + '-' + (i + 1) + '-' + Date.now().toString(36) +
+                  Math.random().toString(36).slice(2, 5) + '.webp';
+      names.push(fname);
+      if (s.full) {
+        files.push({ path: CFG.IMAGE_DIR + '/' + slug + '/' + fname,
+                     content: { base64: s.full } });
+        files.push({ path: CFG.IMAGE_DIR + '/' + slug + '/thumb/' + fname,
+                     content: { base64: s.thumb } });
+      } else {
+        names.pop();
+        names.push(s.name);
+      }
     });
 
-    chain
+    var row = {
+      slug: slug,
+      name: name,
+      tag: $('fTag').value,
+      priceLow: parseInt($('fPriceLow').value, 10) || 0,
+      priceHigh: $('fPriceHigh').value ? parseInt($('fPriceHigh').value, 10) : 0,
+      sizes: $('fSizes').value.trim(),
+      note: $('fNote').value.trim(),
+      images: names,
+      hidden: $('fHidden').checked
+    };
+
+    if (editing) {
+      rows[rows.indexOf(editing)] = row;
+    } else {
+      rows.push(row);
+    }
+
+    $('saveBtn').disabled = true;
+    publish(files, (editing ? 'update ' : 'add ') + name)
       .then(function () {
-        if (!videoFile) return videoUrl;
-        return uploadOne(videoFile, slug).then(function (u) { tick(); return u; });
-      })
-      .then(function (vid) {
-        var payload = {
-          slug: slug,
-          name: name,
-          tag: $('fTag').value,
-          price_low: parseInt($('fPriceLow').value, 10) || 0,
-          price_high: $('fPriceHigh').value ? parseInt($('fPriceHigh').value, 10) : null,
-          sizes: $('fSizes').value.trim(),
-          note: $('fNote').value.trim(),
-          images: urls,
-          video_url: vid || null,
-          published: $('fPublished').checked
-        };
-        if (editing) return sb.from('products').update(payload).eq('id', editing.id);
-        payload.position = rows.length;
-        return sb.from('products').insert(payload);
-      })
-      .then(function (res) {
-        save.disabled = false;
-        $('prog').hidden = true;
-        if (res && res.error) { showErr('formErr', res.error.message); return; }
-        toast(editing ? 'Piece updated' : 'Piece added');
+        $('saveBtn').disabled = false;
         closeForm();
-        load();
+        render();
       })
-      .catch(function (err) {
-        save.disabled = false;
-        $('prog').hidden = true;
-        showErr('formErr', err.message || 'Upload failed. Please try again.');
+      .catch(function () {
+        $('saveBtn').disabled = false;
+        load();
       });
   });
+
+  function uniqueSlug(base) {
+    var taken = {};
+    rows.forEach(function (r) { taken[r.slug] = true; });
+    if (!taken[base]) return base;
+    var n = 2;
+    while (taken[base + '-' + n]) n++;
+    return base + '-' + n;
+  }
 
   /* ---------- delete ---------- */
   $('deleteBtn').addEventListener('click', function () {
     if (!editing) return;
-    if (!confirm('Delete "' + editing.name + '"? This cannot be undone.')) return;
-    sb.from('products').delete().eq('id', editing.id).then(function (res) {
-      if (res.error) { toast(res.error.message, true); return; }
-      toast('Piece deleted');
+    if (!confirm('Remove "' + editing.name + '" from the website?\n\n' +
+                 'The photos stay in the repository, so this can be undone.')) return;
+    rows.splice(rows.indexOf(editing), 1);
+    publish([], 'remove ' + editing.name).then(function () {
       closeForm();
-      load();
-    });
-  });
-
-  /* ============================================================
-     IMPORT the catalogue that shipped with the site
-     ============================================================ */
-  $('importBtn').addEventListener('click', function () {
-    var seed = window.BYJOOY_PRODUCTS || [];
-    if (!seed.length) { toast('Nothing to import', true); return; }
-
-    var have = {};
-    rows.forEach(function (r) { have[r.slug] = true; });
-    var add = seed.filter(function (p) { return !have[p.slug]; });
-    if (!add.length) { toast('Already imported'); return; }
-
-    if (!confirm('Import ' + add.length + ' styles from the site catalogue?')) return;
-
-    var base = location.origin +
-      location.pathname.replace(/\/admin\/.*$/, '') + '/assets/img/';
-
-    var payload = add.map(function (p, i) {
-      return {
-        slug: p.slug,
-        name: p.name,
-        tag: p.tag,
-        price_low: p.priceLow,
-        price_high: p.priceHigh || null,
-        sizes: p.sizes,
-        note: p.note,
-        images: p.images.map(function (f) { return base + p.slug + '/' + f; }),
-        published: true,
-        position: rows.length + i
-      };
-    });
-
-    $('importBtn').disabled = true;
-    sb.from('products').insert(payload).then(function (res) {
-      $('importBtn').disabled = false;
-      if (res.error) { toast(res.error.message, true); return; }
-      toast('Imported ' + payload.length + ' styles');
-      load();
-    });
+      render();
+    }).catch(function () { load(); });
   });
 })();

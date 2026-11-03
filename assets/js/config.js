@@ -1,27 +1,23 @@
 /* ============================================================
-   ByJooy - backend configuration
+   ByJooy - configuration
 
-   Fill these two values in once, from your Supabase project:
-     Supabase dashboard -> Project Settings -> API
-       URL      -> SUPABASE_URL
-       anon key -> SUPABASE_ANON_KEY
+   The Studio dashboard saves straight into this GitHub repository.
+   There is no server and no database. When she saves a piece, the
+   dashboard writes the photos and the catalogue file as one commit,
+   and GitHub Pages republishes the site a minute or two later.
 
-   The anon key is meant to be public. It can only do what the
-   database policies allow, which is: read published products, and
-   nothing else unless you are signed in. See SETUP.md.
-
-   Until these are filled in, the site runs on the bundled catalogue
-   in products.js and the admin dashboard will say it is not connected.
+   Point these at whichever repo the site is published from.
    ============================================================ */
 window.BYJOOY_CONFIG = {
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: '',
+  // GitHub repository the site is served from
+  REPO_OWNER: 'zaddywebbuilds',
+  REPO_NAME:  'byjooyfashion',
+  REPO_BRANCH: 'main',
 
-  // WhatsApp number in international format, no plus sign
+  // Where the dashboard reads and writes the catalogue
+  DATA_PATH: 'data/products.json',
+  IMAGE_DIR: 'assets/img',
+
+  // WhatsApp number, international format, no plus sign
   WHATSAPP: '2349038800195'
-};
-
-window.BYJOOY_CONFIG.isConnected = function () {
-  var c = window.BYJOOY_CONFIG;
-  return !!(c.SUPABASE_URL && c.SUPABASE_ANON_KEY);
 };

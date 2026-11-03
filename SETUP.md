@@ -1,92 +1,80 @@
-# Connecting the Studio dashboard
+# Setting up the Studio dashboard
 
-The website works right now without any of this. The sixteen styles are built
-into the page. You only need these steps if you want the owner to be able to
-add and edit pieces herself at `/admin/`.
+Studio lets her add and edit pieces at `/admin/` without touching code.
 
-It is free, and it takes about five minutes. Do it once.
+There is no server, no database and nothing to pay for. When she saves,
+Studio writes the photos and the catalogue straight into this GitHub
+repository as one commit, and the live site updates a minute or two later.
 
----
-
-## 1. Make a Supabase project
-
-Go to [supabase.com](https://supabase.com) and sign up. Create a new project.
-
-- **Name:** ByJooy
-- **Region:** pick the one nearest Lagos (usually `eu-west` or `eu-central`)
-- **Database password:** generate one and save it somewhere safe
-
-Wait a minute or two while it builds.
-
-## 2. Create the tables
-
-In the left sidebar open **SQL Editor** and click **New query**.
-
-Open `supabase/schema.sql` from this project, copy the whole file, paste it in,
-and press **Run**.
-
-You should see "Success. No rows returned." That is correct.
-
-## 3. Copy the two keys into the site
-
-In the sidebar open **Project Settings** then **API**. You need two values:
-
-| On the Supabase page | Goes into `assets/js/config.js` |
-|---|---|
-| Project URL | `SUPABASE_URL` |
-| `anon` `public` key | `SUPABASE_ANON_KEY` |
-
-Open `assets/js/config.js` and paste them in:
-
-```js
-window.BYJOOY_CONFIG = {
-  SUPABASE_URL: 'https://xxxxxxxxxxx.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOi...',
-  WHATSAPP: '2349038800195'
-};
-```
-
-The anon key is safe to publish. The database rules only let it read pieces
-that are set to show. Nothing can be changed without signing in.
-
-## 4. Create her login
-
-In the sidebar open **Authentication** then **Users**, and click
-**Add user** then **Create new user**.
-
-- Enter her email and a password
-- Tick **Auto Confirm User** so she does not have to click a link in an email
-
-Give her those details. She can change the password later from the same screen.
-
-## 5. Commit and push
-
-```bash
-git add assets/js/config.js && git commit -m "connect studio backend" && git push
-```
-
-Give it two minutes to go live.
+Setup is one job: make her an access key. About three minutes.
 
 ---
 
-## Using it
+## Make the access key
 
-She goes to **`/admin/`** on the site, signs in, and gets the dashboard.
+Do this from the GitHub account that owns the repository.
 
-- **+ New piece** adds a style. Name, price, sizes, category, description,
-  photos, and an optional video.
+1. Go to **[github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)**
+
+2. Fill it in:
+
+   | Field | Set it to |
+   |---|---|
+   | Token name | `ByJooy Studio` |
+   | Expiration | the longest offered, or **No expiration** |
+   | Resource owner | `zaddywebbuilds` |
+   | Repository access | **Only select repositories**, then pick `byjooyfashion` |
+
+3. Open **Repository permissions** and set exactly one:
+
+   - **Contents** -> **Read and write**
+
+   Leave everything else on No access. This key can only edit files in this
+   one repository. It cannot touch other repos, settings, or the account.
+
+4. Click **Generate token** and copy the key. It starts `github_pat_`.
+   GitHub shows it once, so paste it somewhere safe now.
+
+## Give it to her
+
+Send her the key and the address: **`/admin/`** on the site.
+
+She pastes the key once, ticks *Stay signed in on this device*, and will not
+be asked again on that phone or laptop.
+
+---
+
+## How she uses it
+
+- **+ New piece** adds a style: name, price, sizes, category, description,
+  photos.
 - Photos are one per colourway. The first is the cover. Drag to reorder.
+  She can upload straight from her phone camera roll; the pictures are
+  shrunk and converted automatically before saving, so size does not matter.
 - **Hide** takes a piece off the website without deleting it.
-- **Import starter catalogue** is a one-time button that pulls the sixteen
-  styles already on the site into the dashboard so everything lives in one
-  place. Press it once, on the first visit.
+- **Move up** and **Move down** change the order on the site.
+- **Delete** removes a piece from the website. The photos stay in the
+  repository, so it can be undone.
 
-Once the dashboard has pieces in it, the website reads from there instead of
-the built-in catalogue. If the backend is ever unreachable the site quietly
-falls back to the built-in sixteen, so it can never show an empty page.
+After each save the site takes a minute or two to update, because GitHub
+rebuilds it. That delay is normal.
 
-## Limits on the free plan
+## If she loses the key
 
-500 MB of database and 1 GB of file storage, which is a few thousand photos.
-Supabase pauses a project after a week with no traffic; opening the site wakes
-it. If that becomes annoying their paid tier is about 25 dollars a month.
+Make a new one with the steps above and delete the old one at
+[github.com/settings/tokens](https://github.com/settings/tokens).
+
+## What the key can and cannot do
+
+It can add, change and delete files in `byjooyfashion`, which is exactly what
+Studio needs. It cannot read private repositories, change account settings,
+or spend money. If it ever leaks, delete it on that page and the key stops
+working immediately.
+
+## Where things live
+
+- `data/products.json` is the catalogue Studio writes.
+- `assets/img/<slug>/` holds the photos, with 440px copies in `thumb/`.
+- `assets/js/products.js` is a copy baked into the page. If the catalogue
+  file ever fails to load the site falls back to it, so the collection can
+  never come up empty. Refresh it with `pwsh ./build-data.ps1`.

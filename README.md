@@ -19,28 +19,29 @@ npx serve -l 4321 .
 ```
 index.html              the site
 admin/                  Studio dashboard (login, add and edit pieces)
+data/products.json      the live catalogue, written by the dashboard
 assets/
   css/style.css
-  js/config.js          backend keys - the only file you edit to connect it
+  js/config.js          repo name, paths, WhatsApp number
   js/main.js            interactions
   js/products.js        GENERATED - do not edit by hand
   img/<slug>/*.webp     full size, used in the lightbox
   img/<slug>/thumb/     440px versions, used on cards
   video/hero.mp4        hero film, muted and looping
-supabase/schema.sql     paste into Supabase once
-build-data.ps1          regenerates products.js from the image folders
-SETUP.md                connecting the dashboard, five steps
+build-data.ps1          regenerates both catalogue files from the folders
+SETUP.md                making her an access key
 ```
 
 ## Where the catalogue comes from
 
-Two sources, in this order:
+`data/products.json` is the live catalogue. The Studio dashboard rewrites it
+and commits it to this repo; the site fetches it on load.
 
-1. **The Studio dashboard**, if `assets/js/config.js` has been filled in.
-2. **`products.js`**, the sixteen styles bundled into the repo.
+`assets/js/products.js` is the same data baked into the page. If that fetch
+ever fails the site falls back to it, so the collection can never render
+empty. Both files are written by `build-data.ps1`.
 
-If the backend is unreachable or empty the site silently falls back to the
-bundled catalogue, so it can never render an empty page. See `SETUP.md`.
+There is no server and no database. See `SETUP.md`.
 
 ## Adding products without the dashboard
 
@@ -92,4 +93,4 @@ Currently `2349038800195` (0903 880 0195).
 ## Still outstanding
 
 - Instagram and TikTok handles. Facebook is linked already.
-- The Studio dashboard is built but not connected. Follow `SETUP.md`.
+- Studio needs an access key making before she can use it. See `SETUP.md`.

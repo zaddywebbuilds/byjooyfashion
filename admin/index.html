@@ -12,35 +12,39 @@
 </head>
 <body>
 
-<!-- ============ NOT CONNECTED ============ -->
+<!-- ============ NOT SET UP ============ -->
 <div class="gate" id="gateSetup" hidden>
   <div class="gate__card">
     <span class="gate__mark">ByJooy</span>
-    <h1>Studio is not connected yet</h1>
-    <p>The backend has not been set up on this site. Open <code>SETUP.md</code>
-       in the project and follow the five steps, then reload this page.</p>
-    <p class="gate__hint">It takes about five minutes and only has to be done once.</p>
+    <h1>Studio is not set up yet</h1>
+    <p>Open <code>SETUP.md</code> in the project and follow the steps, then reload this page.</p>
   </div>
 </div>
 
-<!-- ============ LOGIN ============ -->
+<!-- ============ SIGN IN ============ -->
 <div class="gate" id="gateLogin" hidden>
   <form class="gate__card" id="loginForm">
     <span class="gate__mark">ByJooy</span>
     <h1>Studio</h1>
-    <p>Sign in to add and edit pieces.</p>
+    <p>Paste your access key to sign in.</p>
 
     <label>
-      <span>Email</span>
-      <input type="email" id="email" autocomplete="username" required>
+      <span>Access key</span>
+      <input type="password" id="token" autocomplete="current-password"
+             placeholder="github_pat_..." required>
     </label>
-    <label>
-      <span>Password</span>
-      <input type="password" id="password" autocomplete="current-password" required>
+
+    <label class="check">
+      <input type="checkbox" id="remember" checked>
+      <span>Stay signed in on this device</span>
     </label>
 
     <button class="btn btn--solid" type="submit" id="loginBtn">Sign in</button>
     <p class="gate__err" id="loginErr" hidden></p>
+    <p class="gate__hint">
+      Your key was given to you when the site was set up. If you have lost it,
+      a new one can be made in a minute. Never share it with anyone.
+    </p>
   </form>
 </div>
 
@@ -53,6 +57,7 @@
       <span class="top__sub">Studio</span>
     </div>
     <div class="top__right">
+      <span class="top__who" id="whoami"></span>
       <a class="btn btn--ghost btn--sm" href="../index.html" target="_blank" rel="noopener">View site</a>
       <button class="btn btn--ghost btn--sm" id="signOut" type="button">Sign out</button>
     </div>
@@ -65,17 +70,19 @@
       <span><strong id="statHidden">0</strong> hidden</span>
     </div>
     <div class="bar__actions">
-      <button class="btn btn--ghost btn--sm" id="importBtn" type="button">Import starter catalogue</button>
       <button class="btn btn--solid btn--sm" id="newBtn" type="button">+ New piece</button>
     </div>
+  </div>
+
+  <div class="pub" id="pubBar" hidden>
+    <span class="pub__spin"></span>
+    <span id="pubTxt">Saving</span>
   </div>
 
   <main class="list" id="list"></main>
 
   <p class="empty" id="empty" hidden>
-    Nothing here yet. Use <strong>+ New piece</strong> to add your first style,
-    or <strong>Import starter catalogue</strong> to pull in the sixteen styles
-    already on the site.
+    Nothing here yet. Use <strong>+ New piece</strong> to add your first style.
   </p>
 </div>
 
@@ -127,34 +134,23 @@
 
       <div class="field">
         <span class="field__label">Photos</span>
-        <p class="field__hint">One photo per colourway. Drag to reorder. The first is the cover.</p>
+        <p class="field__hint">
+          One photo per colourway. Drag to reorder, the first one is the cover.
+          Big photos are fine, they are shrunk automatically before saving.
+        </p>
         <div class="drop" id="drop">
           <input type="file" id="fFiles" accept="image/*" multiple hidden>
           <button type="button" id="pickBtn">Choose photos</button>
           <span>or drop them here</span>
         </div>
+        <p class="field__hint" id="prepping" hidden></p>
         <div class="shots" id="shots"></div>
       </div>
 
-      <div class="field">
-        <span class="field__label">Video <i>optional</i></span>
-        <p class="field__hint">A short clip for this piece.</p>
-        <div class="drop drop--sm">
-          <input type="file" id="fVideo" accept="video/*" hidden>
-          <button type="button" id="pickVideo">Choose video</button>
-          <span id="videoName">none</span>
-        </div>
-      </div>
-
       <label class="check">
-        <input type="checkbox" id="fPublished" checked>
-        <span>Show this piece on the website</span>
+        <input type="checkbox" id="fHidden">
+        <span>Hide this piece from the website</span>
       </label>
-
-      <div class="prog" id="prog" hidden>
-        <div class="prog__bar"><i id="progBar"></i></div>
-        <span id="progTxt">Uploading</span>
-      </div>
 
       <p class="gate__err" id="formErr" hidden></p>
     </div>
@@ -170,9 +166,10 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/products.js"></script>
+<script src="github.js"></script>
+<script src="images.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

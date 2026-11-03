@@ -14,14 +14,8 @@
   gsap.registerPlugin(ScrollTrigger);
 
   /* ---------- helpers ---------- */
-  // Catalogue rows from the backend carry full URLs; the bundled ones carry
-  // bare filenames and have a matching thumb/ next to them.
-  function src(p, i) {
-    return p.absolute ? p.images[i] : IMG + p.slug + '/' + p.images[i];
-  }
-  function thumb(p, i) {
-    return p.absolute ? p.images[i] : IMG + p.slug + '/thumb/' + p.images[i];
-  }
+  function src(p, i) { return IMG + p.slug + '/' + p.images[i]; }
+  function thumb(p, i) { return IMG + p.slug + '/thumb/' + p.images[i]; }
   function naira(n) { return '₦' + n.toLocaleString('en-NG'); }
   function priceLabel(p) {
     return p.priceHigh ? naira(p.priceLow) + ' – ' + naira(p.priceHigh) : naira(p.priceLow);
@@ -563,47 +557,26 @@
 
   /* ============================================================
      CATALOGUE SOURCE
-     Uses the backend when it is configured, otherwise the catalogue
-     bundled in products.js. Any failure falls back rather than
-     leaving the page empty.
-     ============================================================ */
-  function loadSupabaseSdk() {
-    if (window.supabase) return Promise.resolve();
-    return new Promise(function (res, rej) {
-      var s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
-      s.onload = res;
-      s.onerror = rej;
-      document.head.appendChild(s);
-    });
-  }
 
+     data/products.json is what the Studio dashboard writes, so it is
+     the live catalogue. products.js is the copy baked into the page
+     and is used if that file cannot be fetched, so the collection can
+     never come up empty.
+     ============================================================ */
   function loadCatalogue() {
     var bundled = window.BYJOOY_PRODUCTS || [];
-    if (!CFG.isConnected || !CFG.isConnected()) return Promise.resolve(bundled);
+    var path = (CFG.DATA_PATH || 'data/products.json') + '?t=' + Date.now();
 
-    return loadSupabaseSdk()
-      .then(function () {
-        var sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
-        return sb.from('products').select('*')
-          .eq('published', true)
-          .order('position').order('created_at');
+    return fetch(path, { cache: 'no-cache' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('no catalogue');
+        return r.json();
       })
-      .then(function (res) {
-        if (res.error || !res.data || !res.data.length) return bundled;
-        return res.data.map(function (r) {
-          return {
-            slug: r.slug,
-            name: r.name,
-            tag: r.tag || 'Core',
-            priceLow: r.price_low,
-            priceHigh: r.price_high || 0,
-            sizes: r.sizes,
-            note: r.note || '',
-            images: r.images || [],
-            absolute: true
-          };
-        }).filter(function (p) { return p.images.length; });
+      .then(function (list) {
+        if (!Array.isArray(list) || !list.length) return bundled;
+        return list.filter(function (p) {
+          return !p.hidden && p.images && p.images.length;
+        });
       })
       .catch(function () { return bundled; });
   }
