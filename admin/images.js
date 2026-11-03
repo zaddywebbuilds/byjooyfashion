@@ -14,6 +14,21 @@
 
   var FULL = 810;
   var THUMB = 440;
+
+  // Safari on iPhone displays WebP perfectly well but cannot *write* it from
+  // a canvas, so asking it to encode WebP silently yields a PNG. Pick a format
+  // the browser can actually produce, and fall back to JPEG, which every
+  // browser can write. Photos go in at whichever extension was used.
+  var FORMAT = (function () {
+    try {
+      var c = document.createElement('canvas');
+      c.width = c.height = 1;
+      if (c.toDataURL('image/webp').indexOf('data:image/webp') === 0) {
+        return { mime: 'image/webp', ext: 'webp' };
+      }
+    } catch (e) { /* fall through */ }
+    return { mime: 'image/jpeg', ext: 'jpg' };
+  })();
   // Matches the quality the existing catalogue was encoded at, so a piece
   // she adds does not look softer than the ones already on the site.
   var Q_FULL = 0.88;
@@ -64,7 +79,7 @@
         };
         fr.onerror = function () { rej(new Error('Could not read the converted image.')); };
         fr.readAsDataURL(blob);
-      }, 'image/webp', quality);
+      }, FORMAT.mime, quality);
     });
   }
 
@@ -81,17 +96,21 @@
         return {
           full: out[0],
           thumb: out[1],
-          preview: 'data:image/webp;base64,' + out[1]
+          ext: FORMAT.ext,
+          preview: 'data:' + FORMAT.mime + ';base64,' + out[1]
         };
       });
     });
   }
 
-  function webpSupported() {
-    var c = document.createElement('canvas');
-    c.width = c.height = 1;
-    return c.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+  // All that is genuinely required is a canvas that can export an image.
+  function canPrepare() {
+    try {
+      var c = document.createElement('canvas');
+      c.width = c.height = 1;
+      return typeof c.toBlob === 'function' && c.toDataURL().indexOf('data:image/') === 0;
+    } catch (e) { return false; }
   }
 
-  window.ByJooyImages = { prepare: prepare, webpSupported: webpSupported };
+  window.ByJooyImages = { prepare: prepare, canPrepare: canPrepare, format: FORMAT };
 })();

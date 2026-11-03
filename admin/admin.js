@@ -74,11 +74,11 @@
     $('gateSetup').hidden = false;
     return;
   }
-  if (!window.ByJooyImages.webpSupported()) {
+  if (!window.ByJooyImages.canPrepare()) {
     $('gateSetup').hidden = false;
-    $('gateSetup').querySelector('h1').textContent = 'This browser is too old';
+    $('gateSetup').querySelector('h1').textContent = 'This browser cannot upload photos';
     $('gateSetup').querySelector('p').textContent =
-      'Studio needs a current browser to prepare photos. Please use Chrome, Edge, Safari or Firefox.';
+      'Studio needs a browser that can resize images. Please try Chrome, Safari, Edge or Firefox.';
     return;
   }
 
@@ -416,7 +416,7 @@
       if (s.name && s.slug === slug) { names.push(s.name); return; }
       // new upload, or a photo carried over from a renamed piece
       var fname = slug + '-' + (i + 1) + '-' + Date.now().toString(36) +
-                  Math.random().toString(36).slice(2, 5) + '.webp';
+                  Math.random().toString(36).slice(2, 5) + '.' + (s.ext || 'jpg');
       names.push(fname);
       if (s.full) {
         files.push({ path: CFG.IMAGE_DIR + '/' + slug + '/' + fname,
