@@ -155,32 +155,49 @@
   // poster is already on screen, so there is nothing to see until it lands.
   function initHeroVideo() {
     var v = document.getElementById('heroVideo');
-    if (!v || reduced) return;
+    if (!v) return;
+    if (reduced) { v.removeAttribute('autoplay'); return; }
 
     // The film panel is only about 375px wide on a phone, where the smaller
-    // encode is still sharp and costs a third as much data. Desktops, where
-    // the panel is twice that, get the full resolution.
+    // encode is still sharp and costs a third as much data.
     var small = v.getAttribute('data-src-small');
     var url = (small && window.matchMedia('(max-width: 900px)').matches)
       ? small
       : v.getAttribute('data-src');
     if (!url) return;
 
-    function load() {
-      v.removeAttribute('data-src');
-      v.removeAttribute('data-src-small');
-      v.preload = 'auto';
-      v.src = url;
+    v.removeAttribute('data-src');
+    v.removeAttribute('data-src-small');
+
+    function attempt() {
       var go = v.play();
-      if (go && go.catch) go.catch(function () { /* poster stands in */ });
+      if (go && go.catch) go.catch(function () { armGesture(); });
     }
 
-    // give the browser a breath to finish laying the page out first
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(load, { timeout: 2000 });
-    } else {
-      setTimeout(load, 600);
+    // iOS refuses autoplay outright in Low Power Mode, and some browsers
+    // refuse it on a slow first load. Falling back to the next tap means
+    // the film still starts rather than sitting on the poster forever.
+    var armed = false;
+    function armGesture() {
+      if (armed) return;
+      armed = true;
+      ['touchstart', 'click', 'scroll'].forEach(function (e) {
+        window.addEventListener(e, once, { once: true, passive: true });
+      });
     }
+    function once() {
+      var go = v.play();
+      if (go && go.catch) go.catch(function () {});
+    }
+
+    v.preload = 'auto';
+    v.src = url;
+    v.load();
+
+    // play as soon as there are frames, rather than waiting for idle time
+    // which on a busy phone can be seconds away
+    if (v.readyState >= 2) attempt();
+    else v.addEventListener('loadeddata', attempt, { once: true });
   }
 
   /* ============================================================
