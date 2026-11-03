@@ -15,7 +15,7 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preload" as="image" href="assets/video/hero-poster.jpg" fetchpriority="high">
+<link rel="preload" as="image" href="assets/video/hero-poster.webp" fetchpriority="high">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/css/style.css">
 
@@ -110,11 +110,15 @@
       </div>
 
       <div class="hero__film">
-        <video id="heroVideo" autoplay muted loop playsinline preload="auto"
-               poster="assets/video/hero-poster.jpg"
-               aria-label="ByJooy pieces emerging from roses and water">
-          <source src="assets/video/hero.mp4" type="video/mp4">
-        </video>
+        <!-- The film is deliberately not fetched up front. At 1.3MB it was
+             saturating the connection and starving the stylesheet and
+             scripts, so the page took far longer to become usable than it
+             needed to. The poster stands in, and main.js attaches the
+             source once the page is built. -->
+        <video id="heroVideo" muted loop playsinline preload="none"
+               poster="assets/video/hero-poster.webp"
+               data-src="assets/video/hero.mp4"
+               aria-label="ByJooy pieces emerging from roses and water"></video>
       </div>
     </section>
 

@@ -136,12 +136,30 @@
   // Some mobile browsers ignore the autoplay attribute but will honour a
   // programmatic play() on a muted inline video, so ask once. If it is
   // still refused the poster frame stands in.
+  // Attach the film only once the page itself is built, so its 1.3MB does
+  // not compete with the CSS and scripts that make the page usable. The
+  // poster is already on screen, so there is nothing to see until it lands.
   function initHeroVideo() {
     var v = document.getElementById('heroVideo');
-    if (!v) return;
-    if (reduced) { v.removeAttribute('autoplay'); v.pause(); return; }
-    var go = v.play();
-    if (go && go.catch) go.catch(function () {});
+    if (!v || reduced) return;
+
+    var url = v.getAttribute('data-src');
+    if (!url) return;
+
+    function load() {
+      v.removeAttribute('data-src');
+      v.preload = 'auto';
+      v.src = url;
+      var go = v.play();
+      if (go && go.catch) go.catch(function () { /* poster stands in */ });
+    }
+
+    // give the browser a breath to finish laying the page out first
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(load, { timeout: 2000 });
+    } else {
+      setTimeout(load, 600);
+    }
   }
 
   /* ============================================================
