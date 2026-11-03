@@ -21,7 +21,7 @@ Do this from the GitHub account that owns the repository.
    | Field | Set it to |
    |---|---|
    | Token name | `ByJooy Studio` |
-   | Expiration | the longest offered, or **No expiration** |
+   | Expiration | **No expiration** |
    | Resource owner | `zaddywebbuilds` |
    | Repository access | **Only select repositories**, then pick `byjooyfashion` |
 
@@ -35,9 +35,24 @@ Do this from the GitHub account that owns the repository.
 4. Click **Generate token** and copy the key. It starts `github_pat_`.
    GitHub shows it once, so paste it somewhere safe now.
 
+> **Pick No expiration.** If you set a date, Studio simply stops accepting
+> her key on that day and she will have no idea why. If your org forbids
+> non-expiring tokens, set a reminder to issue a new one before it lapses.
+
 ## Give it to her
 
-Send her the key and the address: **`/admin/`** on the site.
+Easiest way: open `/admin/` on **her** phone yourself, paste the key in with
+*Remember me* ticked, and hand the phone back. She never sees the key and
+never types it again. Repeat once on any other device she uses.
+
+Otherwise send her the key and the address, and talk her through the one
+paste. Treat it like a password in transit.
+
+## Check it first
+
+Before handing it over, sign in yourself and add a test piece, then delete
+it. Sign-in performs a real write against the repository, so if the
+permission is wrong you find out immediately rather than she does.
 
 She pastes the key once, ticks *Stay signed in on this device*, and will not
 be asked again on that phone or laptop.
