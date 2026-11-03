@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ByJooy">
+  <rect width="64" height="64" rx="13" fill="#140F11"/>
+  <!-- B, drawn as paths so it does not depend on a font being available -->
+  <g fill="#FDF6F7">
+    <!-- stem -->
+    <rect x="16" y="16" width="6.4" height="32" rx="1"/>
+    <!-- upper bowl -->
+    <path d="M22.4 16h10.2c5.5 0 9.1 2.8 9.1 7.4 0 4.5-3.6 7.4-9.1 7.4H22.4v-5.2h9.4c2 0 3.2-.9 3.2-2.2 0-1.3-1.2-2.2-3.2-2.2h-9.4V16Z"/>
+    <!-- lower bowl, slightly wider, the way a Bodoni B sits -->
+    <path d="M22.4 30.8h11.3c6 0 9.9 3.2 9.9 8.6 0 5.4-3.9 8.6-9.9 8.6H22.4v-5.4h10.6c2.4 0 3.8-1.2 3.8-3.2 0-2-1.4-3.2-3.8-3.2H22.4v-5.4Z"/>
+  </g>
+  <!-- a rose note, tying it to the film -->
+  <circle cx="47" cy="45" r="4.2" fill="#BC8588"/>
+</svg>

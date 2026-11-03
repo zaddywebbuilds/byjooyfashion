@@ -3,7 +3,7 @@ $base = $PSScriptRoot
 $imgRoot = Join-Path $base "assets\img"
 
 $meta = [ordered]@{
-  "adire-asoke-2-piece-set"   = @{ name="Adire & Aso-Oke Two-Piece"; tag="Signature"; priceLow=25000; priceHigh=35000; sizes="6 - 18"; note="Hand-dyed adire panelled with woven aso-oke." }
+  "adire-asoke-2-piece-set"   = @{ name="Adire & Aso-Oke Two-Piece"; tag="Bestseller"; priceLow=25000; priceHigh=35000; sizes="6 - 18"; note="Hand-dyed adire panelled with woven aso-oke." }
   "adire-2-piece-set"         = @{ name="Adire Two-Piece";           tag="Core";      priceLow=25000; priceHigh=0;     sizes="6 - 20"; note="Matching top and trouser in a single dye run." }
   "adire-short-2-tone-dress"  = @{ name="Two-Tone Short Dress";      tag="Core";      priceLow=17000; priceHigh=20000; sizes="6 - 20"; note="Contrast hem flounce on a dyed bodice." }
   "adire-combo-2-piece-set"   = @{ name="Combo Two-Piece I";         tag="Core";      priceLow=25000; priceHigh=0;     sizes="6 - 20"; note="Mixed-pattern set, each panel dyed separately." }
@@ -13,8 +13,8 @@ $meta = [ordered]@{
   "adire-2-piece-set-2"       = @{ name="Adire Two-Piece II";        tag="Core";      priceLow=25000; priceHigh=0;     sizes="6 - 20"; note="Matching top and trouser in a single dye run." }
   "adire-dress"               = @{ name="Adire Dress";               tag="Core";      priceLow=20000; priceHigh=0;     sizes="6 - 18"; note="The everyday cut, straight through the body." }
   "adire-smocked-long-dress"  = @{ name="Smocked Long Dress";        tag="Core";      priceLow=25000; priceHigh=0;     sizes="6 - 18"; note="Smocked bodice falling into a full skirt." }
-  "adire-boubou"              = @{ name="Adire Boubou";              tag="Signature"; priceLow=25000; priceHigh=0;     sizes="6 - 22"; note="Flowing boubou, finished with a matching scarf." }
-  "adire-snatched-boubou"     = @{ name="Snatched Boubou";           tag="Signature"; priceLow=20000; priceHigh=0;     sizes="All";    note="Boubou drape, nipped at the waist." }
+  "adire-boubou"              = @{ name="Adire Boubou";              tag="Bestseller"; priceLow=25000; priceHigh=0;     sizes="6 - 22"; note="Flowing boubou, finished with a matching scarf." }
+  "adire-snatched-boubou"     = @{ name="Snatched Boubou";           tag="Bestseller"; priceLow=20000; priceHigh=0;     sizes="All";    note="Boubou drape, nipped at the waist." }
   "adire-jumpsuit"            = @{ name="Adire Jumpsuit";            tag="Core";      priceLow=20000; priceHigh=0;     sizes="6 - 22"; note="One piece, wide leg, dyed end to end." }
   "adire-3-tiered-gown"       = @{ name="Three-Tiered Gown";         tag="Occasion";  priceLow=20000; priceHigh=0;     sizes="All";    note="Three tiers of movement, floor length." }
   "adire-backless-gown"       = @{ name="Backless Gown";             tag="Occasion";  priceLow=15000; priceHigh=0;     sizes="6 - 22"; note="Open back, comes with a matching scarf." }

@@ -3,7 +3,7 @@ window.BYJOOY_PRODUCTS = [
   {
     "slug": "adire-asoke-2-piece-set",
     "name": "Adire & Aso-Oke Two-Piece",
-    "tag": "Signature",
+    "tag": "Bestseller",
     "priceLow": 25000,
     "priceHigh": 35000,
     "sizes": "6 - 18",
@@ -228,7 +228,7 @@ window.BYJOOY_PRODUCTS = [
   {
     "slug": "adire-boubou",
     "name": "Adire Boubou",
-    "tag": "Signature",
+    "tag": "Bestseller",
     "priceLow": 25000,
     "priceHigh": 0,
     "sizes": "6 - 22",
@@ -246,7 +246,7 @@ window.BYJOOY_PRODUCTS = [
   {
     "slug": "adire-snatched-boubou",
     "name": "Snatched Boubou",
-    "tag": "Signature",
+    "tag": "Bestseller",
     "priceLow": 20000,
     "priceHigh": 0,
     "sizes": "All",

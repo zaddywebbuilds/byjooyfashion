@@ -1,7 +1,12 @@
-# ByJooy - Adire Atelier
+# ByJooy - African Prints, Lagos
 
-Site for ByJooy, a Lagos adire label. Sixteen cuts, 145 colourways, ordering
-through WhatsApp, and a Studio dashboard the owner can run herself.
+Site for ByJooy, a Lagos label selling African prints: adire, Ankara, silk and
+crepe. Sixteen styles, 145 colourways, ordering through WhatsApp, and a Studio
+dashboard the owner runs herself.
+
+Everything is **ready to wear**. Delivery is 1 to 3 days in Nigeria and 5 to 14
+days outside it. The site must not claim made-to-order or bespoke fitting; that
+was wrong in an earlier draft and the owner corrected it.
 
 Live: https://zaddywebbuilds.github.io/byjooyfashion/
 Studio: `/admin/`
@@ -108,5 +113,5 @@ Currently `2349038800195` (0903 880 0195).
 
 ## Still outstanding
 
-- Instagram and TikTok handles. Facebook is linked already.
+- Instagram handle. Facebook and TikTok are linked already.
 - Studio needs an access key making before she can use it. See `SETUP.md`.

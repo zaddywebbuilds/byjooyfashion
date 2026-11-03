@@ -139,7 +139,8 @@
   function buildMarquee() {
     var track = document.getElementById('marqueeTrack');
     if (!track) return;
-    var words = ['Hand-dyed', 'Adire', 'Made to order', 'Lagos', 'Size 6–22', 'No two alike'];
+    var words = ['African prints', 'Adire', 'Ankara', 'Silk', 'Crepe',
+                 'Ready to wear', 'Lagos', 'Size 6–22'];
     var set = words.concat(words, words);
     set.forEach(function (w) { track.appendChild(el('span', null, w)); });
 
