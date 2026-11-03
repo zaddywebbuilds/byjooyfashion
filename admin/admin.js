@@ -16,6 +16,13 @@
   var editing = null;   // row being edited, or null for new
   var shots = [];       // [{name} existing | {name, full, thumb, preview} new]
   var dragFrom = null;
+  var videoFile = null;   // a newly chosen clip, not yet committed
+  var videoName = null;   // the clip already stored against this piece
+
+  // Every upload lives in the repository permanently, so a phone video
+  // straight off the camera would bloat it badly. The browser cannot
+  // transcode, so the only honest control is a limit.
+  var VIDEO_MAX = 12 * 1024 * 1024;
 
   /* ---------- helpers ---------- */
 
@@ -240,6 +247,9 @@
   function openForm(r) {
     editing = r || null;
     shots = [];
+    videoFile = null;
+    videoName = r ? (r.video || null) : null;
+    paintVideo();
 
     $('formTitle').textContent = r ? 'Edit piece' : 'New piece';
     $('fName').value = r ? r.name : '';
@@ -265,6 +275,8 @@
     $('sheet').hidden = true;
     document.body.style.overflow = '';
     shots = [];
+    videoFile = null;
+    videoName = null;
     editing = null;
   }
 
@@ -351,6 +363,44 @@
     if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
   });
 
+  /* ---------- video ---------- */
+  function paintVideo() {
+    var label = videoFile ? videoFile.name : (videoName ? 'clip attached' : 'none');
+    $('videoName').textContent = label;
+    $('clearVideo').hidden = !(videoFile || videoName);
+  }
+
+  $('pickVideo').addEventListener('click', function () { $('fVideo').click(); });
+
+  $('fVideo').addEventListener('change', function (e) {
+    var f = e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    if (f.size > VIDEO_MAX) {
+      showErr('formErr', 'That clip is ' + Math.round(f.size / 1048576) +
+        'MB. Please use one under 12MB, or trim it on your phone first.');
+      return;
+    }
+    showErr('formErr', '');
+    videoFile = f;
+    paintVideo();
+  });
+
+  $('clearVideo').addEventListener('click', function () {
+    videoFile = null;
+    videoName = null;
+    paintVideo();
+  });
+
+  function fileToBase64(file) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { res(String(fr.result).split(',')[1]); };
+      fr.onerror = function () { rej(new Error('Could not read that clip.')); };
+      fr.readAsDataURL(file);
+    });
+  }
+
   /* ---------- save ---------- */
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -379,33 +429,49 @@
       }
     });
 
-    var row = {
-      slug: slug,
-      name: name,
-      tag: $('fTag').value,
-      priceLow: parseInt($('fPriceLow').value, 10) || 0,
-      priceHigh: $('fPriceHigh').value ? parseInt($('fPriceHigh').value, 10) : 0,
-      sizes: $('fSizes').value.trim(),
-      note: $('fNote').value.trim(),
-      images: names,
-      hidden: $('fHidden').checked
-    };
-
-    if (editing) {
-      rows[rows.indexOf(editing)] = row;
-    } else {
-      rows.push(row);
+    function buildRow(vidName) {
+      return {
+        slug: slug,
+        name: name,
+        tag: $('fTag').value,
+        priceLow: parseInt($('fPriceLow').value, 10) || 0,
+        priceHigh: $('fPriceHigh').value ? parseInt($('fPriceHigh').value, 10) : 0,
+        sizes: $('fSizes').value.trim(),
+        note: $('fNote').value.trim(),
+        images: names,
+        video: vidName || null,
+        hidden: $('fHidden').checked
+      };
     }
 
     $('saveBtn').disabled = true;
-    publish(files, (editing ? 'update ' : 'add ') + name)
+
+    // a newly chosen clip has to be read off disk before it can be committed
+    var ready = videoFile
+      ? fileToBase64(videoFile).then(function (b64) {
+          var ext = (videoFile.name.split('.').pop() || 'mp4').toLowerCase();
+          var vname = slug + '-' + Date.now().toString(36) + '.' + ext;
+          files.push({ path: CFG.VIDEO_DIR + '/' + slug + '/' + vname,
+                       content: { base64: b64 } });
+          return vname;
+        })
+      : Promise.resolve(videoName);
+
+    ready
+      .then(function (vidName) {
+        var row = buildRow(vidName);
+        if (editing) rows[rows.indexOf(editing)] = row;
+        else rows.push(row);
+        return publish(files, (editing ? 'update ' : 'add ') + name);
+      })
       .then(function () {
         $('saveBtn').disabled = false;
         closeForm();
         render();
       })
-      .catch(function () {
+      .catch(function (err) {
         $('saveBtn').disabled = false;
+        showErr('formErr', err && err.message ? err.message : 'Could not save.');
         load();
       });
   });

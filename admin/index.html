@@ -149,6 +149,21 @@
         <div class="shots" id="shots"></div>
       </div>
 
+      <div class="field">
+        <span class="field__label">Video <i>optional</i></span>
+        <p class="field__hint">
+          A short clip of the piece, shown first when someone opens it.
+          Keep it under 12MB or it will be refused, since every upload is
+          stored with the site forever.
+        </p>
+        <div class="drop drop--sm">
+          <input type="file" id="fVideo" accept="video/*" hidden>
+          <button type="button" id="pickVideo">Choose video</button>
+          <span id="videoName">none</span>
+          <button type="button" id="clearVideo" hidden>Remove</button>
+        </div>
+      </div>
+
       <label class="check">
         <input type="checkbox" id="fHidden">
         <span>Hide this piece from the website</span>

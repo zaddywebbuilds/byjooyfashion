@@ -492,6 +492,18 @@
     document.getElementById('lbOrder').href = waLink(p);
 
     lbGrid.innerHTML = '';
+
+    // a clip, when she has added one, leads the gallery
+    if (p.video) {
+      var vfig = el('figure', 'lb__clip');
+      vfig.innerHTML =
+        '<span class="lb__shot"><video src="' +
+          esc((CFG.VIDEO_DIR || 'assets/video/pieces') + '/' + p.slug + '/' + p.video) +
+          '" muted loop playsinline autoplay preload="metadata"></video></span>' +
+        '<figcaption><span>On the move</span></figcaption>';
+      lbGrid.appendChild(vfig);
+    }
+
     p.images.forEach(function (f, i) {
       var fig = el('figure');
       fig.innerHTML =

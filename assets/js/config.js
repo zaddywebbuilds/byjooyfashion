@@ -17,6 +17,7 @@ window.BYJOOY_CONFIG = {
   // Where the dashboard reads and writes the catalogue
   DATA_PATH: 'data/products.json',
   IMAGE_DIR: 'assets/img',
+  VIDEO_DIR: 'assets/video/pieces',
 
   // WhatsApp number, international format, no plus sign
   WHATSAPP: '2349038800195'

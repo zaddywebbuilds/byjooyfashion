@@ -83,6 +83,10 @@ be asked again on that phone or laptop.
 - **Move up** and **Move down** change the order on the site.
 - **Delete** removes a piece from the website. The photos stay in the
   repository, so it can be undone.
+- **Video** is optional, one short clip per piece, shown first when someone
+  opens that style. Keep it under 12MB. There is no way to shrink a video in
+  the browser, and every upload stays in the repository permanently, so a
+  long clip straight off a phone would bloat the site. Trim it first.
 
 After each save the site takes a minute or two to update, because GitHub
 rebuilds it. That delay is normal.
