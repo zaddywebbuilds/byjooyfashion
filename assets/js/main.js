@@ -43,6 +43,14 @@
     return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
   }
 
+  // Product text is typed in Studio and read back from a file, so it is
+  // escaped before it ever reaches markup.
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function el(tag, cls, html) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -191,12 +199,12 @@
       card.dataset.slug = p.slug;
       card.innerHTML =
         '<div class="fcard__media">' +
-          '<img src="' + thumb(p, 0) + '" alt="' + p.name +
+          '<img src="' + esc(thumb(p, 0)) + '" alt="' + esc(p.name) +
             '" width="440" height="587" loading="lazy" decoding="async">' +
         '</div>' +
         '<div class="fcard__foot">' +
           '<span class="fcard__num">' + pad(i + 1) + '</span>' +
-          '<span class="fcard__name">' + p.name + '</span>' +
+          '<span class="fcard__name">' + esc(p.name) + '</span>' +
           '<span class="fcard__price">' + priceLabel(p) + '</span>' +
         '</div>' +
         '<div class="fcard__act">' +
@@ -240,7 +248,7 @@
     var tags = ['All'].concat(P.map(function (p) { return p.tag; })
       .filter(function (v, i, a) { return a.indexOf(v) === i; }));
     tags.forEach(function (t, i) {
-      var b = el('button', 'chip' + (i === 0 ? ' is-on' : ''), t);
+      var b = el('button', 'chip' + (i === 0 ? ' is-on' : ''), esc(t));
       b.dataset.tag = t;
       b.addEventListener('click', function () {
         filters.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('is-on'); });
@@ -262,10 +270,10 @@
       var imgHtml = shots.map(function (f, i) {
         // only the cover loads up front; the rest hold a blank pixel until hover
         if (i === 0) {
-          return '<img src="' + thumb(p, 0) + '" alt="' + p.name +
+          return '<img src="' + esc(thumb(p, 0)) + '" alt="' + esc(p.name) +
                  '" width="440" height="587" loading="lazy" decoding="async" class="is-on">';
         }
-        return '<img src="' + BLANK + '" data-src="' + thumb(p, i) +
+        return '<img src="' + BLANK + '" data-src="' + esc(thumb(p, i)) +
                '" alt="" width="440" height="587" decoding="async" aria-hidden="true">';
       }).join('');
       var dotHtml = shots.map(function (_, i) {
@@ -277,8 +285,8 @@
         '<span class="pcard__dots">' + dotHtml + '</span>' +
         '<div class="pcard__foot">' +
           '<span class="pcard__id">' +
-            '<span class="pcard__name">' + p.name + '</span>' +
-            '<span class="pcard__sizes">Sizes ' + p.sizes + ' &middot; ' +
+            '<span class="pcard__name">' + esc(p.name) + '</span>' +
+            '<span class="pcard__sizes">Sizes ' + esc(p.sizes) + ' &middot; ' +
               p.images.length + ' colourways</span>' +
           '</span>' +
           '<span class="pcard__price">' + priceLabel(p) + '</span>' +
@@ -368,7 +376,7 @@
       if (!p) return;
       var i = Math.min(pick[1], p.images.length - 1);
       var fig = el('figure');
-      fig.innerHTML = '<img src="' + src(p, i) + '" alt="' + p.name +
+      fig.innerHTML = '<img src="' + esc(src(p, i)) + '" alt="' + esc(p.name) +
                       '" loading="lazy" decoding="async">';
       wrap.appendChild(fig);
     });
@@ -393,7 +401,7 @@
       if (!p) return;
       var i = Math.min(pick[1], p.images.length - 1);
       var fig = el('figure');
-      fig.innerHTML = '<img src="' + src(p, i) + '" alt="' + p.name + '" loading="lazy">';
+      fig.innerHTML = '<img src="' + esc(src(p, i)) + '" alt="' + esc(p.name) + '" loading="lazy">';
       wrap.appendChild(fig);
     });
 
@@ -426,8 +434,8 @@
     p.images.forEach(function (f, i) {
       var fig = el('figure');
       fig.innerHTML =
-        '<span class="lb__shot"><img src="' + IMG + p.slug + '/' + f +
-          '" alt="' + p.name + ' colourway ' + (i + 1) + '" loading="lazy"></span>' +
+        '<span class="lb__shot"><img src="' + esc(IMG + p.slug + '/' + f) +
+          '" alt="' + esc(p.name) + ' colourway ' + (i + 1) + '" loading="lazy"></span>' +
         '<figcaption>' +
           '<span>Colourway ' + pad(i + 1) + '</span>' +
           '<a class="lb__wa" href="' + waLink(p, i + 1) + '" target="_blank" rel="noopener">' +
@@ -522,7 +530,7 @@
     P.slice(0, 8).forEach(function (p) {
       if (!p.images || !p.images.length) return;
       var fig = el('figure');
-      fig.innerHTML = '<img src="' + thumb(p, 0) + '" alt="" loading="lazy" decoding="async">';
+      fig.innerHTML = '<img src="' + esc(thumb(p, 0)) + '" alt="" loading="lazy" decoding="async">';
       wrap.appendChild(fig);
     });
   }

@@ -18,6 +18,16 @@
   var dragFrom = null;
 
   /* ---------- helpers ---------- */
+
+  // Catalogue text is typed by a person and read back out of a file, so it
+  // never goes into markup raw. This page holds the access key, and a stray
+  // tag in a product field would be the one way to reach it.
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function naira(n) { return '₦' + Number(n || 0).toLocaleString('en-NG'); }
 
   function priceLabel(r) {
@@ -149,7 +159,7 @@
     $('empty').hidden = rows.length > 0;
 
     rows.forEach(function (r, i) {
-      var cover = (r.images && r.images[0]) ? imgUrl(r.slug, r.images[0], true) : '';
+      var cover = (r.images && r.images[0]) ? esc(imgUrl(r.slug, r.images[0], true)) : '';
       var card = document.createElement('article');
       card.className = 'item';
       card.innerHTML =
@@ -160,7 +170,7 @@
         '</div>' +
         '<div class="item__body">' +
           '<span class="item__name"></span>' +
-          '<span class="item__meta">Sizes ' + r.sizes + ' &middot; ' + r.tag + '</span>' +
+          '<span class="item__meta">Sizes ' + esc(r.sizes) + ' &middot; ' + esc(r.tag) + '</span>' +
           '<span class="item__price">' + priceLabel(r) + '</span>' +
           '<div class="item__row">' +
             '<button class="btn btn--ghost" data-act="edit">Edit</button>' +
