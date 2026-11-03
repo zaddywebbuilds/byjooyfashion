@@ -39,6 +39,19 @@ Do this from the GitHub account that owns the repository.
 > her key on that day and she will have no idea why. If your org forbids
 > non-expiring tokens, set a reminder to issue a new one before it lapses.
 
+## Make a second key for her
+
+Do not hand over the one you tested with. Repeat the steps above and make a
+separate key named `ByJooy Studio - Jooy`, with identical settings.
+
+One key each means you can delete hers on its own, the day her phone is lost
+or she stops working on the site, without locking yourself out. Deleting a
+shared key would cut off both of you.
+
+Both keys sit under your GitHub account, so every save is recorded as you no
+matter who made it. That only affects authorship in the commit log and
+changes nothing about how the site works.
+
 ## Give it to her
 
 Easiest way: open `/admin/` on **her** phone yourself, paste the key in with
@@ -74,10 +87,12 @@ be asked again on that phone or laptop.
 After each save the site takes a minute or two to update, because GitHub
 rebuilds it. That delay is normal.
 
-## If she loses the key
+## If she loses the key, or you need to cut off access
 
-Make a new one with the steps above and delete the old one at
-[github.com/settings/tokens](https://github.com/settings/tokens).
+Go to
+[github.com/settings/personal-access-tokens](https://github.com/settings/personal-access-tokens),
+delete `ByJooy Studio - Jooy`, and make a replacement with the same steps.
+It stops working the moment you delete it. Your own key is untouched.
 
 ## What the key can and cannot do
 
