@@ -14,7 +14,9 @@
 
   var FULL = 810;
   var THUMB = 440;
-  var Q_FULL = 0.82;
+  // Matches the quality the existing catalogue was encoded at, so a piece
+  // she adds does not look softer than the ones already on the site.
+  var Q_FULL = 0.88;
   var Q_THUMB = 0.80;
 
   // Phone photos carry rotation in their EXIF data. Without this a
