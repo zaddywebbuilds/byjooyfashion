@@ -1,83 +1,95 @@
 # ByJooy - Adire Atelier
 
-Single-page site for ByJooy, a Lagos adire label. 16 styles, 145 colourways.
+Site for ByJooy, a Lagos adire label. Sixteen cuts, 145 colourways, ordering
+through WhatsApp, and a Studio dashboard the owner can run herself.
+
+Live: https://zaddywebbuilds.github.io/byjooyfashion/
+Studio: `/admin/`
 
 ## Running locally
 
-No build step. Serve the folder over HTTP (not `file://`, or the image paths and
-GSAP pins misbehave):
+No build step. Serve over HTTP, not `file://`:
 
 ```bash
 npx serve -l 4321 .
 ```
 
-Then open http://localhost:4321
-
 ## Structure
 
 ```
-index.html
+index.html              the site
+admin/                  Studio dashboard (login, add and edit pieces)
 assets/
   css/style.css
-  js/main.js          interactions
-  js/products.js      GENERATED - do not edit by hand
-  img/<style-slug>/   product photos, one folder per style
-build-data.ps1        regenerates products.js from the image folders
+  js/config.js          backend keys - the only file you edit to connect it
+  js/main.js            interactions
+  js/products.js        GENERATED - do not edit by hand
+  img/<slug>/*.webp     full size, used in the lightbox
+  img/<slug>/thumb/     440px versions, used on cards
+  video/hero.mp4        hero film, muted and looping
+supabase/schema.sql     paste into Supabase once
+build-data.ps1          regenerates products.js from the image folders
+SETUP.md                connecting the dashboard, five steps
 ```
 
-## Adding or changing products
+## Where the catalogue comes from
 
-1. Drop the photos into `assets/img/<style-slug>/`, named
-   `<style-slug>-1.jpg`, `-2.jpg`, and so on.
-2. If the style is new, add an entry to the `$meta` table at the top of
-   `build-data.ps1` (name, tag, price, sizes, note). The key must match the
-   folder name exactly.
-3. Regenerate the data file:
+Two sources, in this order:
 
-   ```bash
-   pwsh ./build-data.ps1
-   ```
+1. **The Studio dashboard**, if `assets/js/config.js` has been filled in.
+2. **`products.js`**, the sixteen styles bundled into the repo.
 
-`products.js` is rewritten from what is actually on disk, so the image lists
-never drift from the folders.
+If the backend is unreachable or empty the site silently falls back to the
+bundled catalogue, so it can never render an empty page. See `SETUP.md`.
 
-The `tag` field drives the filter chips on the collection grid. Current tags are
-`Signature`, `Core` and `Occasion`.
+## Adding products without the dashboard
+
+1. Put photos in `assets/img/<slug>/` named `<slug>-1.webp`, `-2.webp`, ...
+2. Put 440px wide copies in `assets/img/<slug>/thumb/` with the same names.
+3. Add a `$meta` entry in `build-data.ps1` keyed by the exact folder name.
+4. Run `pwsh ./build-data.ps1`.
+
+To make the two sizes from a source photo:
+
+```bash
+ffmpeg -i in.jpg -c:v libwebp -quality 82 assets/img/<slug>/<slug>-1.webp
+ffmpeg -i in.jpg -vf scale=440:-1 -c:v libwebp -quality 80 assets/img/<slug>/thumb/<slug>-1.webp
+```
 
 ## Brand
 
-White and black. The clothes supply the colour, so the site stays out of their
-way. Green is the only accent and is used sparingly.
-
-Both greens live in `:root` at the top of `style.css`:
+Surfaces carry a dusty rose sampled from the hero film rather than flat white
+and black. Text is near-black. Green is the action colour and is what every
+WhatsApp control uses.
 
 ```css
---green:    #0F6B45;   /* on white */
---green-lt: #3DA47A;   /* on black */
+--bone:    #FDF6F7;   /* page surface   */
+--bone-2:  #F6E7EA;   /* alt surface    */
+--rose:    #BC8588;   /* accent         */
+--rose-dp: #8F5456;   /* accent on text */
+--green:   #0F6B45;   /* actions        */
 ```
 
-Change those two values and the accent updates everywhere.
+Two layout rules the client set:
 
-Layout rule: **no text or UI sits on top of a photo.** Names, prices, colourway
-counts and captions all go on the white or black surface beside or under the
-image.
+- **No text or UI on top of a photo.** Names, prices, colourway counts and
+  captions sit on the surface beside or under the image.
+- **No empty stretches.** If a section has room for an image it gets one.
 
-## Contact in the markup
+## Ordering
 
-WhatsApp `0903 880 0195` is linked as `wa.me/2349038800195` in four places
-(order section, order button in the lightbox, and twice in the footer area) and
-in the JSON-LD block. Search for `2349038800195` to change all of them at once.
+Every piece has a WhatsApp button, and every colourway inside the lightbox has
+its own. Each one opens a chat with the style, the colourway number and the
+quoted price already written, leaving the buyer to fill in size and location.
 
-## Before going live
+The number is set once in `assets/js/config.js` under `WHATSAPP`, and the
+scripted buttons read it from there. The plain links in `index.html` (hero,
+order section, footer) carry it inline, so search `2349038800195` if it ever
+changes.
 
-- Facebook is live (`facebook.com/61595328153182`), linked in the order section
-  and the footer and listed under `sameAs` in the JSON-LD. Instagram and TikTok
-  handles are still outstanding; add them beside the Facebook link in those
-  same three places when they arrive.
-- Photos are 810x1080 straight off the phone. Fine as-is, but converting to
-  WebP would cut the page weight meaningfully.
+Currently `2349038800195` (0903 880 0195).
 
-## Tech
+## Still outstanding
 
-Plain HTML, CSS and JS. GSAP + ScrollTrigger for the scroll-driven work, Lenis
-for smooth scrolling, both from CDN. Deploys anywhere static.
+- Instagram and TikTok handles. Facebook is linked already.
+- The Studio dashboard is built but not connected. Follow `SETUP.md`.

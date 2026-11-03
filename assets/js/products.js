@@ -9,37 +9,37 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 18",
     "note": "Hand-dyed adire panelled with woven aso-oke.",
     "images": [
-      "adire-asoke-2-piece-set-1.jpg",
-      "adire-asoke-2-piece-set-2.jpg",
-      "adire-asoke-2-piece-set-3.jpg",
-      "adire-asoke-2-piece-set-4.jpg",
-      "adire-asoke-2-piece-set-5.jpg",
-      "adire-asoke-2-piece-set-6.jpg",
-      "adire-asoke-2-piece-set-7.jpg",
-      "adire-asoke-2-piece-set-8.jpg",
-      "adire-asoke-2-piece-set-9.jpg",
-      "adire-asoke-2-piece-set-10.jpg",
-      "adire-asoke-2-piece-set-11.jpg",
-      "adire-asoke-2-piece-set-12.jpg",
-      "adire-asoke-2-piece-set-13.jpg",
-      "adire-asoke-2-piece-set-14.jpg",
-      "adire-asoke-2-piece-set-15.jpg",
-      "adire-asoke-2-piece-set-16.jpg",
-      "adire-asoke-2-piece-set-17.jpg",
-      "adire-asoke-2-piece-set-18.jpg",
-      "adire-asoke-2-piece-set-19.jpg",
-      "adire-asoke-2-piece-set-20.jpg",
-      "adire-asoke-2-piece-set-21.jpg",
-      "adire-asoke-2-piece-set-22.jpg",
-      "adire-asoke-2-piece-set-23.jpg",
-      "adire-asoke-2-piece-set-24.jpg",
-      "adire-asoke-2-piece-set-25.jpg",
-      "adire-asoke-2-piece-set-26.jpg",
-      "adire-asoke-2-piece-set-27.jpg",
-      "adire-asoke-2-piece-set-28.jpg",
-      "adire-asoke-2-piece-set-29.jpg",
-      "adire-asoke-2-piece-set-30.jpg",
-      "adire-asoke-2-piece-set-31.jpg"
+      "adire-asoke-2-piece-set-1.webp",
+      "adire-asoke-2-piece-set-2.webp",
+      "adire-asoke-2-piece-set-3.webp",
+      "adire-asoke-2-piece-set-4.webp",
+      "adire-asoke-2-piece-set-5.webp",
+      "adire-asoke-2-piece-set-6.webp",
+      "adire-asoke-2-piece-set-7.webp",
+      "adire-asoke-2-piece-set-8.webp",
+      "adire-asoke-2-piece-set-9.webp",
+      "adire-asoke-2-piece-set-10.webp",
+      "adire-asoke-2-piece-set-11.webp",
+      "adire-asoke-2-piece-set-12.webp",
+      "adire-asoke-2-piece-set-13.webp",
+      "adire-asoke-2-piece-set-14.webp",
+      "adire-asoke-2-piece-set-15.webp",
+      "adire-asoke-2-piece-set-16.webp",
+      "adire-asoke-2-piece-set-17.webp",
+      "adire-asoke-2-piece-set-18.webp",
+      "adire-asoke-2-piece-set-19.webp",
+      "adire-asoke-2-piece-set-20.webp",
+      "adire-asoke-2-piece-set-21.webp",
+      "adire-asoke-2-piece-set-22.webp",
+      "adire-asoke-2-piece-set-23.webp",
+      "adire-asoke-2-piece-set-24.webp",
+      "adire-asoke-2-piece-set-25.webp",
+      "adire-asoke-2-piece-set-26.webp",
+      "adire-asoke-2-piece-set-27.webp",
+      "adire-asoke-2-piece-set-28.webp",
+      "adire-asoke-2-piece-set-29.webp",
+      "adire-asoke-2-piece-set-30.webp",
+      "adire-asoke-2-piece-set-31.webp"
     ]
   },
   {
@@ -51,28 +51,28 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Matching top and trouser in a single dye run.",
     "images": [
-      "adire-2-piece-set-1.jpg",
-      "adire-2-piece-set-2.jpg",
-      "adire-2-piece-set-3.jpg",
-      "adire-2-piece-set-4.jpg",
-      "adire-2-piece-set-5.jpg",
-      "adire-2-piece-set-6.jpg",
-      "adire-2-piece-set-7.jpg",
-      "adire-2-piece-set-8.jpg",
-      "adire-2-piece-set-9.jpg",
-      "adire-2-piece-set-10.jpg",
-      "adire-2-piece-set-11.jpg",
-      "adire-2-piece-set-12.jpg",
-      "adire-2-piece-set-13.jpg",
-      "adire-2-piece-set-14.jpg",
-      "adire-2-piece-set-15.jpg",
-      "adire-2-piece-set-16.jpg",
-      "adire-2-piece-set-17.jpg",
-      "adire-2-piece-set-18.jpg",
-      "adire-2-piece-set-19.jpg",
-      "adire-2-piece-set-20.jpg",
-      "adire-2-piece-set-21.jpg",
-      "adire-2-piece-set-22.jpg"
+      "adire-2-piece-set-1.webp",
+      "adire-2-piece-set-2.webp",
+      "adire-2-piece-set-3.webp",
+      "adire-2-piece-set-4.webp",
+      "adire-2-piece-set-5.webp",
+      "adire-2-piece-set-6.webp",
+      "adire-2-piece-set-7.webp",
+      "adire-2-piece-set-8.webp",
+      "adire-2-piece-set-9.webp",
+      "adire-2-piece-set-10.webp",
+      "adire-2-piece-set-11.webp",
+      "adire-2-piece-set-12.webp",
+      "adire-2-piece-set-13.webp",
+      "adire-2-piece-set-14.webp",
+      "adire-2-piece-set-15.webp",
+      "adire-2-piece-set-16.webp",
+      "adire-2-piece-set-17.webp",
+      "adire-2-piece-set-18.webp",
+      "adire-2-piece-set-19.webp",
+      "adire-2-piece-set-20.webp",
+      "adire-2-piece-set-21.webp",
+      "adire-2-piece-set-22.webp"
     ]
   },
   {
@@ -84,24 +84,24 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Contrast hem flounce on a dyed bodice.",
     "images": [
-      "adire-short-2-tone-dress-1.jpg",
-      "adire-short-2-tone-dress-2.jpg",
-      "adire-short-2-tone-dress-3.jpg",
-      "adire-short-2-tone-dress-4.jpg",
-      "adire-short-2-tone-dress-5.jpg",
-      "adire-short-2-tone-dress-6.jpg",
-      "adire-short-2-tone-dress-7.jpg",
-      "adire-short-2-tone-dress-8.jpg",
-      "adire-short-2-tone-dress-9.jpg",
-      "adire-short-2-tone-dress-10.jpg",
-      "adire-short-2-tone-dress-11.jpg",
-      "adire-short-2-tone-dress-12.jpg",
-      "adire-short-2-tone-dress-13.jpg",
-      "adire-short-2-tone-dress-14.jpg",
-      "adire-short-2-tone-dress-15.jpg",
-      "adire-short-2-tone-dress-16.jpg",
-      "adire-short-2-tone-dress-17.jpg",
-      "adire-short-2-tone-dress-18.jpg"
+      "adire-short-2-tone-dress-1.webp",
+      "adire-short-2-tone-dress-2.webp",
+      "adire-short-2-tone-dress-3.webp",
+      "adire-short-2-tone-dress-4.webp",
+      "adire-short-2-tone-dress-5.webp",
+      "adire-short-2-tone-dress-6.webp",
+      "adire-short-2-tone-dress-7.webp",
+      "adire-short-2-tone-dress-8.webp",
+      "adire-short-2-tone-dress-9.webp",
+      "adire-short-2-tone-dress-10.webp",
+      "adire-short-2-tone-dress-11.webp",
+      "adire-short-2-tone-dress-12.webp",
+      "adire-short-2-tone-dress-13.webp",
+      "adire-short-2-tone-dress-14.webp",
+      "adire-short-2-tone-dress-15.webp",
+      "adire-short-2-tone-dress-16.webp",
+      "adire-short-2-tone-dress-17.webp",
+      "adire-short-2-tone-dress-18.webp"
     ]
   },
   {
@@ -113,14 +113,14 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Mixed-pattern set, each panel dyed separately.",
     "images": [
-      "adire-combo-2-piece-set-1.jpg",
-      "adire-combo-2-piece-set-2.jpg",
-      "adire-combo-2-piece-set-3.jpg",
-      "adire-combo-2-piece-set-4.jpg",
-      "adire-combo-2-piece-set-5.jpg",
-      "adire-combo-2-piece-set-6.jpg",
-      "adire-combo-2-piece-set-7.jpg",
-      "adire-combo-2-piece-set-8.jpg"
+      "adire-combo-2-piece-set-1.webp",
+      "adire-combo-2-piece-set-2.webp",
+      "adire-combo-2-piece-set-3.webp",
+      "adire-combo-2-piece-set-4.webp",
+      "adire-combo-2-piece-set-5.webp",
+      "adire-combo-2-piece-set-6.webp",
+      "adire-combo-2-piece-set-7.webp",
+      "adire-combo-2-piece-set-8.webp"
     ]
   },
   {
@@ -132,9 +132,9 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Mixed-pattern set, each panel dyed separately.",
     "images": [
-      "adire-combo-2-piece-set-2-1.jpg",
-      "adire-combo-2-piece-set-2-2.jpg",
-      "adire-combo-2-piece-set-2-3.jpg"
+      "adire-combo-2-piece-set-2-1.webp",
+      "adire-combo-2-piece-set-2-2.webp",
+      "adire-combo-2-piece-set-2-3.webp"
     ]
   },
   {
@@ -146,13 +146,13 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Mixed-pattern set, each panel dyed separately.",
     "images": [
-      "adire-combo-2-piece-set-3-1.jpg",
-      "adire-combo-2-piece-set-3-2.jpg",
-      "adire-combo-2-piece-set-3-3.jpg",
-      "adire-combo-2-piece-set-3-4.jpg",
-      "adire-combo-2-piece-set-3-5.jpg",
-      "adire-combo-2-piece-set-3-6.jpg",
-      "adire-combo-2-piece-set-3-7.jpg"
+      "adire-combo-2-piece-set-3-1.webp",
+      "adire-combo-2-piece-set-3-2.webp",
+      "adire-combo-2-piece-set-3-3.webp",
+      "adire-combo-2-piece-set-3-4.webp",
+      "adire-combo-2-piece-set-3-5.webp",
+      "adire-combo-2-piece-set-3-6.webp",
+      "adire-combo-2-piece-set-3-7.webp"
     ]
   },
   {
@@ -164,11 +164,11 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Mixed-pattern set, each panel dyed separately.",
     "images": [
-      "adire-combo-2-piece-set-4-1.jpg",
-      "adire-combo-2-piece-set-4-2.jpg",
-      "adire-combo-2-piece-set-4-3.jpg",
-      "adire-combo-2-piece-set-4-4.jpg",
-      "adire-combo-2-piece-set-4-5.jpg"
+      "adire-combo-2-piece-set-4-1.webp",
+      "adire-combo-2-piece-set-4-2.webp",
+      "adire-combo-2-piece-set-4-3.webp",
+      "adire-combo-2-piece-set-4-4.webp",
+      "adire-combo-2-piece-set-4-5.webp"
     ]
   },
   {
@@ -180,12 +180,12 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 20",
     "note": "Matching top and trouser in a single dye run.",
     "images": [
-      "adire-2-piece-set-2-1.jpg",
-      "adire-2-piece-set-2-2.jpg",
-      "adire-2-piece-set-2-3.jpg",
-      "adire-2-piece-set-2-4.jpg",
-      "adire-2-piece-set-2-5.jpg",
-      "adire-2-piece-set-2-6.jpg"
+      "adire-2-piece-set-2-1.webp",
+      "adire-2-piece-set-2-2.webp",
+      "adire-2-piece-set-2-3.webp",
+      "adire-2-piece-set-2-4.webp",
+      "adire-2-piece-set-2-5.webp",
+      "adire-2-piece-set-2-6.webp"
     ]
   },
   {
@@ -197,14 +197,14 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 18",
     "note": "The everyday cut, straight through the body.",
     "images": [
-      "adire-dress-1.jpg",
-      "adire-dress-2.jpg",
-      "adire-dress-3.jpg",
-      "adire-dress-4.jpg",
-      "adire-dress-5.jpg",
-      "adire-dress-6.jpg",
-      "adire-dress-7.jpg",
-      "adire-dress-8.jpg"
+      "adire-dress-1.webp",
+      "adire-dress-2.webp",
+      "adire-dress-3.webp",
+      "adire-dress-4.webp",
+      "adire-dress-5.webp",
+      "adire-dress-6.webp",
+      "adire-dress-7.webp",
+      "adire-dress-8.webp"
     ]
   },
   {
@@ -216,13 +216,13 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 18",
     "note": "Smocked bodice falling into a full skirt.",
     "images": [
-      "adire-smocked-long-dress-1.jpg",
-      "adire-smocked-long-dress-2.jpg",
-      "adire-smocked-long-dress-3.jpg",
-      "adire-smocked-long-dress-4.jpg",
-      "adire-smocked-long-dress-5.jpg",
-      "adire-smocked-long-dress-6.jpg",
-      "adire-smocked-long-dress-7.jpg"
+      "adire-smocked-long-dress-1.webp",
+      "adire-smocked-long-dress-2.webp",
+      "adire-smocked-long-dress-3.webp",
+      "adire-smocked-long-dress-4.webp",
+      "adire-smocked-long-dress-5.webp",
+      "adire-smocked-long-dress-6.webp",
+      "adire-smocked-long-dress-7.webp"
     ]
   },
   {
@@ -234,13 +234,13 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 22",
     "note": "Flowing boubou, finished with a matching scarf.",
     "images": [
-      "adire-boubou-1.jpg",
-      "adire-boubou-2.jpg",
-      "adire-boubou-3.jpg",
-      "adire-boubou-4.jpg",
-      "adire-boubou-5.jpg",
-      "adire-boubou-6.jpg",
-      "adire-boubou-7.jpg"
+      "adire-boubou-1.webp",
+      "adire-boubou-2.webp",
+      "adire-boubou-3.webp",
+      "adire-boubou-4.webp",
+      "adire-boubou-5.webp",
+      "adire-boubou-6.webp",
+      "adire-boubou-7.webp"
     ]
   },
   {
@@ -252,10 +252,10 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "All",
     "note": "Boubou drape, nipped at the waist.",
     "images": [
-      "adire-snatched-boubou-1.jpg",
-      "adire-snatched-boubou-2.jpg",
-      "adire-snatched-boubou-3.jpg",
-      "adire-snatched-boubou-4.jpg"
+      "adire-snatched-boubou-1.webp",
+      "adire-snatched-boubou-2.webp",
+      "adire-snatched-boubou-3.webp",
+      "adire-snatched-boubou-4.webp"
     ]
   },
   {
@@ -267,11 +267,11 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 22",
     "note": "One piece, wide leg, dyed end to end.",
     "images": [
-      "adire-jumpsuit-1.jpg",
-      "adire-jumpsuit-2.jpg",
-      "adire-jumpsuit-3.jpg",
-      "adire-jumpsuit-4.jpg",
-      "adire-jumpsuit-5.jpg"
+      "adire-jumpsuit-1.webp",
+      "adire-jumpsuit-2.webp",
+      "adire-jumpsuit-3.webp",
+      "adire-jumpsuit-4.webp",
+      "adire-jumpsuit-5.webp"
     ]
   },
   {
@@ -283,10 +283,10 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "All",
     "note": "Three tiers of movement, floor length.",
     "images": [
-      "adire-3-tiered-gown-1.jpg",
-      "adire-3-tiered-gown-2.jpg",
-      "adire-3-tiered-gown-3.jpg",
-      "adire-3-tiered-gown-4.jpg"
+      "adire-3-tiered-gown-1.webp",
+      "adire-3-tiered-gown-2.webp",
+      "adire-3-tiered-gown-3.webp",
+      "adire-3-tiered-gown-4.webp"
     ]
   },
   {
@@ -298,11 +298,11 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 22",
     "note": "Open back, comes with a matching scarf.",
     "images": [
-      "adire-backless-gown-1.jpg",
-      "adire-backless-gown-2.jpg",
-      "adire-backless-gown-3.jpg",
-      "adire-backless-gown-4.jpg",
-      "adire-backless-gown-5.jpg"
+      "adire-backless-gown-1.webp",
+      "adire-backless-gown-2.webp",
+      "adire-backless-gown-3.webp",
+      "adire-backless-gown-4.webp",
+      "adire-backless-gown-5.webp"
     ]
   },
   {
@@ -314,11 +314,11 @@ window.BYJOOY_PRODUCTS = [
     "sizes": "6 - 18",
     "note": "Column skirt with a cropped dyed top.",
     "images": [
-      "adire-long-skirt-set-1.jpg",
-      "adire-long-skirt-set-2.jpg",
-      "adire-long-skirt-set-3.jpg",
-      "adire-long-skirt-set-4.jpg",
-      "adire-long-skirt-set-5.jpg"
+      "adire-long-skirt-set-1.webp",
+      "adire-long-skirt-set-2.webp",
+      "adire-long-skirt-set-3.webp",
+      "adire-long-skirt-set-4.webp",
+      "adire-long-skirt-set-5.webp"
     ]
   }
 ];

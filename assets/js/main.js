@@ -6,17 +6,49 @@
 
   var P = window.BYJOOY_PRODUCTS || [];
   var IMG = 'assets/img/';
+  var CFG = window.BYJOOY_CONFIG || {};
+  var BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isTouch = window.matchMedia('(hover: none)').matches;
 
   gsap.registerPlugin(ScrollTrigger);
 
   /* ---------- helpers ---------- */
-  function src(p, i) { return IMG + p.slug + '/' + p.images[i]; }
+  // Catalogue rows from the backend carry full URLs; the bundled ones carry
+  // bare filenames and have a matching thumb/ next to them.
+  function src(p, i) {
+    return p.absolute ? p.images[i] : IMG + p.slug + '/' + p.images[i];
+  }
+  function thumb(p, i) {
+    return p.absolute ? p.images[i] : IMG + p.slug + '/thumb/' + p.images[i];
+  }
   function naira(n) { return '₦' + n.toLocaleString('en-NG'); }
   function priceLabel(p) {
     return p.priceHigh ? naira(p.priceLow) + ' – ' + naira(p.priceHigh) : naira(p.priceLow);
   }
+  var WA = CFG.WHATSAPP || '2349038800195';
+
+  function waIcon() {
+    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
+      '<path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.83 2.41a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.14.16-.29.18-.54.06-.25-.13-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/>' +
+      '</svg>';
+  }
+
+  // Pre-fills the chat so she receives the style, the colourway and the
+  // price already quoted, and only has to be told a size.
+  function waLink(p, colourway) {
+    var what = colourway
+      ? p.name + ', colourway ' + pad(colourway)
+      : p.name;
+    var msg =
+      'Hello ByJooy,\n\n' +
+      'I would like to order the ' + what + ' (' + priceLabel(p) + ').\n\n' +
+      'My size is: \n' +
+      'Delivery location: \n\n' +
+      'Please confirm availability and how to pay. Thank you.';
+    return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
+  }
+
   function el(tag, cls, html) {
     var n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -94,90 +126,17 @@
   }
 
   /* ============================================================
-     HERO - scroll-zoom card
+     HERO
      ============================================================ */
-  var HERO_PICKS = [
-    ['adire-asoke-2-piece-set', 0],
-    ['adire-short-2-tone-dress', 0],
-    ['adire-2-piece-set', 0],
-    ['adire-boubou', 0],
-    ['adire-3-tiered-gown', 0]
-  ];
-
-  function buildHero() {
-    var media = document.getElementById('heroMedia');
-    var imgs = [];
-
-    HERO_PICKS.forEach(function (pick, i) {
-      var p = P.find(function (x) { return x.slug === pick[0]; });
-      if (!p) return;
-      var im = new Image();
-      im.src = src(p, pick[1]);
-      im.alt = p.name;
-      if (i > 0) im.loading = 'lazy';
-      media.appendChild(im);
-      imgs.push(im);
-    });
-
-    if (!imgs.length) return;
-    imgs[0].classList.add('is-on');
-
-    if (!reduced && imgs.length > 1) {
-      var cur = 0;
-      setInterval(function () {
-        imgs[cur].classList.remove('is-on');
-        cur = (cur + 1) % imgs.length;
-        imgs[cur].classList.add('is-on');
-      }, 4200);
-    }
-
-  }
-
-  function heroZoom() {
-    var hero = document.getElementById('hero');
-    var card = document.getElementById('heroCard');
-    if (!hero || !card) return;
-
-    var bezel = card.querySelector('.hero__bezel');
-    var screen = card.querySelector('.hero__screen');
-    var intro = document.getElementById('heroIntro');
-    var hint = document.getElementById('heroHint');
-
-    // The card sits below the headline, so as it scales up it also has to
-    // travel to the middle of the viewport or it grows off the bottom.
-    var fit = { s: 1, dy: 0 };
-    function measure() {
-      var w = card.offsetWidth, h = card.offsetHeight;
-      if (!w || !h) return;
-      fit.s = Math.max(window.innerWidth / w, window.innerHeight / h);
-      fit.dy = (window.innerHeight / 2) - (card.offsetTop + h / 2);
-    }
-    measure();
-
-    var tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: hero,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: .8,
-        invalidateOnRefresh: true
-      }
-    });
-
-    tl.fromTo(card,
-        { scale: 1, y: 0 },
-        {
-          scale: function () { return fit.s; },
-          y: function () { return fit.dy; },
-          ease: 'none'
-        }, 0)
-      .fromTo(bezel, { padding: 10, borderRadius: 26 }, { padding: 0, borderRadius: 0, ease: 'none' }, 0)
-      .fromTo(screen, { borderRadius: 18 }, { borderRadius: 0, ease: 'none' }, 0)
-      .to(intro, { opacity: 0, y: -50, ease: 'none', duration: .45 }, 0)
-      .to('.hero__bg', { opacity: 0, ease: 'none' }, 0)
-      .to(hint, { opacity: 0, ease: 'none', duration: .2 }, 0);
-
-    ScrollTrigger.addEventListener('refreshInit', measure);
+  // Some mobile browsers ignore the autoplay attribute but will honour a
+  // programmatic play() on a muted inline video, so ask once. If it is
+  // still refused the poster frame stands in.
+  function initHeroVideo() {
+    var v = document.getElementById('heroVideo');
+    if (!v) return;
+    if (reduced) { v.removeAttribute('autoplay'); v.pause(); return; }
+    var go = v.play();
+    if (go && go.catch) go.catch(function () {});
   }
 
   /* ============================================================
@@ -234,14 +193,23 @@
       card.dataset.slug = p.slug;
       card.innerHTML =
         '<div class="fcard__media">' +
-          '<img src="' + src(p, 0) + '" alt="' + p.name + '" loading="lazy">' +
+          '<img src="' + thumb(p, 0) + '" alt="' + p.name +
+            '" width="440" height="587" loading="lazy" decoding="async">' +
         '</div>' +
         '<div class="fcard__foot">' +
           '<span class="fcard__num">' + pad(i + 1) + '</span>' +
           '<span class="fcard__name">' + p.name + '</span>' +
           '<span class="fcard__price">' + priceLabel(p) + '</span>' +
+        '</div>' +
+        '<div class="fcard__act">' +
+          '<a class="fcard__wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' +
+            waIcon() + 'Order on WhatsApp' +
+          '</a>' +
         '</div>';
-      card.addEventListener('click', function () { openLB(p); });
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.fcard__wa')) return;
+        openLB(p);
+      });
       track.appendChild(card);
     });
 
@@ -294,8 +262,13 @@
 
       var shots = p.images.slice(0, 5);
       var imgHtml = shots.map(function (f, i) {
-        return '<img src="' + IMG + p.slug + '/' + f + '" alt="' + p.name +
-               '" loading="lazy"' + (i === 0 ? ' class="is-on"' : '') + '>';
+        // only the cover loads up front; the rest hold a blank pixel until hover
+        if (i === 0) {
+          return '<img src="' + thumb(p, 0) + '" alt="' + p.name +
+                 '" width="440" height="587" loading="lazy" decoding="async" class="is-on">';
+        }
+        return '<img src="' + BLANK + '" data-src="' + thumb(p, i) +
+               '" alt="" width="440" height="587" decoding="async" aria-hidden="true">';
       }).join('');
       var dotHtml = shots.map(function (_, i) {
         return '<i' + (i === 0 ? ' class="is-on"' : '') + '></i>';
@@ -307,13 +280,16 @@
         '<div class="pcard__foot">' +
           '<span class="pcard__id">' +
             '<span class="pcard__name">' + p.name + '</span>' +
-            '<span class="pcard__sizes">Sizes ' + p.sizes + '</span>' +
+            '<span class="pcard__sizes">Sizes ' + p.sizes + ' &middot; ' +
+              p.images.length + ' colourways</span>' +
           '</span>' +
           '<span class="pcard__price">' + priceLabel(p) + '</span>' +
         '</div>' +
-        '<div class="pcard__meta">' +
-          '<span class="pcard__tag">' + p.tag + '</span>' +
-          '<span class="pcard__badge">' + p.images.length + ' colourways</span>' +
+        '<div class="pcard__act">' +
+          '<a class="pcard__wa" href="' + waLink(p) + '" target="_blank" rel="noopener">' +
+            waIcon() + 'Order' +
+          '</a>' +
+          '<button class="pcard__view" type="button">View ' + p.images.length + '</button>' +
         '</div>';
 
       var media = card.querySelector('.pcard__media');
@@ -329,9 +305,21 @@
         dots[idx].classList.add('is-on');
       }
 
+      function wakeImages() {
+        for (var k = 0; k < imgs.length; k++) {
+          var ds = imgs[k].getAttribute('data-src');
+          if (ds) {
+            imgs[k].src = ds;
+            imgs[k].removeAttribute('data-src');
+            imgs[k].removeAttribute('aria-hidden');
+          }
+        }
+      }
+
       if (!isTouch) {
         card.addEventListener('mouseenter', function () {
           if (imgs.length < 2) return;
+          wakeImages();
           timer = setInterval(function () { show((idx + 1) % imgs.length); }, 850);
         });
         card.addEventListener('mouseleave', function () {
@@ -350,7 +338,11 @@
         });
       }
 
-      card.addEventListener('click', function () { openLB(p); });
+      // the WhatsApp link must not also open the lightbox
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('.pcard__wa')) return;
+        openLB(p);
+      });
       grid.appendChild(card);
     });
 
@@ -365,6 +357,23 @@
     } else {
       gsap.set('.pcard', { opacity: 1, y: 0 });
     }
+  }
+
+  /* ============================================================
+     FILLER ART - keeps the long sections from running empty
+     ============================================================ */
+  function fillArt(nodeId, picks) {
+    var wrap = document.getElementById(nodeId);
+    if (!wrap) return;
+    picks.forEach(function (pick) {
+      var p = P.find(function (x) { return x.slug === pick[0]; });
+      if (!p) return;
+      var i = Math.min(pick[1], p.images.length - 1);
+      var fig = el('figure');
+      fig.innerHTML = '<img src="' + src(p, i) + '" alt="' + p.name +
+                      '" loading="lazy" decoding="async">';
+      wrap.appendChild(fig);
+    });
   }
 
   /* ============================================================
@@ -413,16 +422,20 @@
     document.getElementById('lbSizes').textContent = p.sizes;
     document.getElementById('lbCount').textContent = p.images.length;
 
-    var order = document.getElementById('lbOrder');
-    order.href = 'https://wa.me/2349038800195?text=' +
-      encodeURIComponent('Hi ByJooy, I would like to order the ' + p.name + '.');
+    document.getElementById('lbOrder').href = waLink(p);
 
     lbGrid.innerHTML = '';
     p.images.forEach(function (f, i) {
       var fig = el('figure');
-      fig.innerHTML = '<span class="lb__shot"><img src="' + IMG + p.slug + '/' + f +
-                      '" alt="' + p.name + ' colourway ' + (i + 1) + '" loading="lazy"></span>' +
-                      '<figcaption>Colourway ' + pad(i + 1) + '</figcaption>';
+      fig.innerHTML =
+        '<span class="lb__shot"><img src="' + IMG + p.slug + '/' + f +
+          '" alt="' + p.name + ' colourway ' + (i + 1) + '" loading="lazy"></span>' +
+        '<figcaption>' +
+          '<span>Colourway ' + pad(i + 1) + '</span>' +
+          '<a class="lb__wa" href="' + waLink(p, i + 1) + '" target="_blank" rel="noopener">' +
+            waIcon() + 'Order this one' +
+          '</a>' +
+        '</figcaption>';
       lbGrid.appendChild(fig);
     });
 
@@ -527,24 +540,80 @@
      BOOT
      ============================================================ */
   function boot() {
-    buildHero();
+    initHeroVideo();
     buildMarquee();
     buildFeatured();
     buildGrid();
     buildCraft();
+    fillArt('statementArt', [
+      ['adire-boubou', 1],
+      ['adire-jumpsuit', 2],
+      ['adire-long-skirt-set', 1],
+      ['adire-backless-gown', 2]
+    ]);
+    fillArt('orderArt', [['adire-asoke-2-piece-set', 12]]);
     statementReveal();
     initCursor();
     initMagnet();
     initNav();
     initFooter();
     revealAll();
-    heroZoom();
     ScrollTrigger.refresh();
+  }
+
+  /* ============================================================
+     CATALOGUE SOURCE
+     Uses the backend when it is configured, otherwise the catalogue
+     bundled in products.js. Any failure falls back rather than
+     leaving the page empty.
+     ============================================================ */
+  function loadSupabaseSdk() {
+    if (window.supabase) return Promise.resolve();
+    return new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
+      s.onload = res;
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  function loadCatalogue() {
+    var bundled = window.BYJOOY_PRODUCTS || [];
+    if (!CFG.isConnected || !CFG.isConnected()) return Promise.resolve(bundled);
+
+    return loadSupabaseSdk()
+      .then(function () {
+        var sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+        return sb.from('products').select('*')
+          .eq('published', true)
+          .order('position').order('created_at');
+      })
+      .then(function (res) {
+        if (res.error || !res.data || !res.data.length) return bundled;
+        return res.data.map(function (r) {
+          return {
+            slug: r.slug,
+            name: r.name,
+            tag: r.tag || 'Core',
+            priceLow: r.price_low,
+            priceHigh: r.price_high || 0,
+            sizes: r.sizes,
+            note: r.note || '',
+            images: r.images || [],
+            absolute: true
+          };
+        }).filter(function (p) { return p.images.length; });
+      })
+      .catch(function () { return bundled; });
   }
 
   function start() {
     initScroll();
-    runLoader(boot);
+    loadCatalogue().then(function (list) {
+      P = list;
+      runLoader(boot);
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);

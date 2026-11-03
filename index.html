@@ -14,6 +14,8 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preload" as="image" href="assets/video/hero-poster.jpg" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,700;6..96,900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 
@@ -72,39 +74,33 @@
 
 <main id="top">
 
-  <!-- ============ HERO : scroll-zoom card ============ -->
+  <!-- ============ HERO ============ -->
   <section class="hero" id="hero">
-    <div class="hero__rail">
-      <div class="hero__stage">
-
-        <div class="hero__bg" aria-hidden="true">
-          <div class="emboss emboss--1"></div>
-          <div class="emboss emboss--2"></div>
-          <div class="emboss emboss--3"></div>
+      <div class="hero__copy">
+        <span class="hero__eyebrow">ByJooy / Adire Atelier, Lagos</span>
+        <h1>Experience <em>Stylish</em> Clothing</h1>
+        <p class="hero__sub">Hand-dyed adire, cut to your measurements. Sixteen cuts, one hundred and forty-five colourways, sizes 6 to 22.</p>
+        <div class="hero__chips">
+          <span>16 cuts</span><span>145 colourways</span><span>Size 6&ndash;22</span>
         </div>
-
-        <div class="hero__intro" id="heroIntro">
-          <span class="hero__eyebrow">ByJooy / Adire Atelier, Lagos</span>
-          <h1>Experience <em>Stylish</em> Clothing</h1>
-          <p class="hero__sub">Hand-dyed adire, cut to order in Lagos.</p>
-          <div class="hero__chips">
-            <span>16 cuts</span><span>145 colourways</span><span>Size 6&ndash;22</span>
-          </div>
+        <div class="hero__cta">
+          <a class="btn btn--solid" href="#collection" data-magnet>
+            <span>See the collection</span><i></i>
+          </a>
+          <a class="btn btn--wa" href="https://wa.me/2349038800195?text=Hello%20ByJooy%2C%20I%20saw%20your%20website%20and%20I%20would%20like%20to%20make%20an%20enquiry." target="_blank" rel="noopener" data-magnet>
+            <span>Order on WhatsApp</span><i></i>
+          </a>
         </div>
-
-        <div class="hero__card" id="heroCard">
-          <div class="hero__bezel">
-            <div class="hero__screen">
-              <div class="hero__media" id="heroMedia"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="hero__scrollHint" id="heroHint"><i></i>Scroll</div>
-
       </div>
-    </div>
-  </section>
+
+      <div class="hero__film">
+        <video id="heroVideo" autoplay muted loop playsinline preload="auto"
+               poster="assets/video/hero-poster.jpg"
+               aria-label="ByJooy adire pieces emerging from roses and water">
+          <source src="assets/video/hero.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
 
   <!-- ============ MARQUEE ============ -->
   <section class="marquee" aria-hidden="true">
@@ -113,13 +109,16 @@
 
   <!-- ============ STATEMENT ============ -->
   <section class="statement" id="statement">
-    <span class="eyebrow">01 / The House</span>
-    <p class="statement__copy" id="statementCopy">Adire is resist-dyeing, the old Yoruba way. Wax, indigo, patience. We keep the hand of it and cut it modern, so a piece that took three days to dye still works on a Tuesday.</p>
-    <div class="statement__meta">
-      <div><strong>Lagos</strong><span>Atelier &amp; studio</span></div>
-      <div><strong>Made to order</strong><span>7&ndash;10 working days</span></div>
-      <div><strong>Size 6&ndash;22</strong><span>Every cut, every colour</span></div>
+    <div class="statement__text">
+      <span class="eyebrow">01 / The House</span>
+      <p class="statement__copy" id="statementCopy">Adire is resist-dyeing, the old Yoruba way. Wax, indigo, patience. We keep the hand of it and cut it modern, so a piece that took three days to dye still works on a Tuesday.</p>
+      <div class="statement__meta">
+        <div><strong>Lagos</strong><span>Atelier &amp; studio</span></div>
+        <div><strong>Made to order</strong><span>7&ndash;10 working days</span></div>
+        <div><strong>Size 6&ndash;22</strong><span>Every cut, every colour</span></div>
+      </div>
     </div>
+    <div class="statement__art" id="statementArt"></div>
   </section>
 
   <!-- ============ FEATURED : horizontal pin ============ -->
@@ -161,6 +160,7 @@
 
   <!-- ============ ORDER ============ -->
   <section class="order" id="order">
+    <div class="order__art" id="orderArt"></div>
     <div class="order__inner">
       <span class="eyebrow">05 / Order</span>
       <h2>Tell us the cut,<br>the colour and<br>your size.</h2>
@@ -242,6 +242,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.13/lenis.min.js"></script>
+<script src="assets/js/config.js"></script>
 <script src="assets/js/products.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
