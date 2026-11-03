@@ -55,6 +55,22 @@
   </div>
 </div>
 
+<script>
+/* The loader is removed by main.js once the page is built. If that script
+   is slow or never arrives, this clears it anyway so nobody is left staring
+   at a black screen. Inline and first so it runs even on a bad connection. */
+(function () {
+  setTimeout(function () {
+    var l = document.getElementById('loader');
+    if (l && l.style.display !== 'none' && !l.dataset.handled) {
+      l.style.transition = 'opacity .4s';
+      l.style.opacity = '0';
+      setTimeout(function () { l.style.display = 'none'; }, 420);
+    }
+  }, 7000);
+})();
+</script>
+
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor" id="cursor" aria-hidden="true"><span></span></div>
 

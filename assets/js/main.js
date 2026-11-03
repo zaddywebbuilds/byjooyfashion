@@ -61,6 +61,9 @@
     var bar = document.getElementById('loaderBar');
     var count = document.getElementById('loaderCount');
 
+    // tells the inline failsafe in index.html to stand down
+    loader.dataset.handled = '1';
+
     if (reduced) {
       loader.style.display = 'none';
       done();
