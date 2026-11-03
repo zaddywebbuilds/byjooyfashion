@@ -84,6 +84,11 @@ done
 The naira sign is U+20A6 and the en dash U+2013; both are in the list above
 and both are used on every product. Check them after any rebuild.
 
+**Bump the `?v=` on the `fonts.css` link** in `index.html` and
+`admin/index.html` whenever the font files change. Pages caches CSS for ten
+minutes, so without that a returning visitor keeps the old stylesheet and
+gets 404s for files that no longer exist.
+
 ## Where the catalogue comes from
 
 `data/products.json` is the live catalogue. The Studio dashboard rewrites it
