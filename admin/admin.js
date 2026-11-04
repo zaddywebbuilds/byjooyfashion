@@ -485,6 +485,118 @@
     return base + '-' + n;
   }
 
+
+  /* ============================================================
+     LOG A SALE
+
+     Writes data/orders.json, which the website reads to mention
+     recent orders. Only ever holds sales she has actually had, and
+     never a customer name.
+     ============================================================ */
+  var orders = [];
+
+  function agoLabel(iso) {
+    var mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (mins < 60) return mins < 2 ? 'just now' : mins + ' min ago';
+    var h = Math.round(mins / 60);
+    if (h < 24) return h + 'h ago';
+    var d = Math.round(h / 24);
+    return d === 1 ? 'yesterday' : d + ' days ago';
+  }
+
+  function paintSaleLog() {
+    var wrap = $('saleLog');
+    wrap.innerHTML = '';
+    var recent = orders.slice().sort(function (a, b) {
+      return new Date(b.at) - new Date(a.at);
+    }).slice(0, 10);
+
+    if (!recent.length) {
+      wrap.innerHTML = '<p class="field__hint">Nothing logged yet.</p>';
+      return;
+    }
+    recent.forEach(function (o) {
+      var p = rows.find(function (r) { return r.slug === o.slug; });
+      var row = document.createElement('div');
+      row.className = 'salelog__row';
+      row.innerHTML =
+        '<span></span><span class="salelog__when">' + esc(agoLabel(o.at)) + '</span>' +
+        '<button type="button" class="salelog__x" aria-label="Remove">&times;</button>';
+      row.firstChild.textContent = (p ? p.name : o.slug) + '  ' + (o.city || '');
+      row.querySelector('.salelog__x').addEventListener('click', function () {
+        orders = orders.filter(function (x) { return x !== o; });
+        saveOrders('remove a logged sale');
+      });
+      wrap.appendChild(row);
+    });
+  }
+
+  function saveOrders(what) {
+    return gh.commit(
+      [{ path: CFG.ORDERS_PATH, content: JSON.stringify(orders, null, 2) + String.fromCharCode(10) }],
+      'studio: ' + what,
+      function (st) { $('pubTxt').textContent = st; }
+    ).then(function () {
+      toast('Saved. The website updates in a minute or two.');
+      paintSaleLog();
+    }).catch(function (err) {
+      showErr('saleErr', err.message);
+    });
+  }
+
+  function openSaleSheet() {
+    var sel = $('sPiece');
+    sel.innerHTML = '';
+    rows.forEach(function (r) {
+      var o = document.createElement('option');
+      o.value = r.slug;
+      o.textContent = r.name;
+      sel.appendChild(o);
+    });
+    showErr('saleErr', '');
+    $('sCity').value = '';
+    $('sWhen').value = '0';
+
+    gh.readJson(CFG.ORDERS_PATH).then(function (d) {
+      orders = Array.isArray(d) ? d : [];
+      paintSaleLog();
+    }).catch(function () { orders = []; paintSaleLog(); });
+
+    $('saleSheet').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSaleSheet() {
+    $('saleSheet').hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  $('saleBtn').addEventListener('click', openSaleSheet);
+  $('saleFormClose').addEventListener('click', closeSaleSheet);
+  $('saleCancel').addEventListener('click', closeSaleSheet);
+  $('saleScrim').addEventListener('click', closeSaleSheet);
+
+  $('saleForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    showErr('saleErr', '');
+    var city = $('sCity').value.trim();
+    if (!city) { showErr('saleErr', 'Please add the city.'); return; }
+
+    var hoursBack = parseInt($('sWhen').value, 10) || 0;
+    var at = new Date(Date.now() - hoursBack * 3600 * 1000).toISOString();
+
+    orders.push({ slug: $('sPiece').value, city: city, at: at });
+
+    // keep the file small; the site only looks at the last 45 days anyway
+    orders = orders.slice(-60);
+
+    $('saleSave').disabled = true;
+    saveOrders('log a sale').then(function () {
+      $('saleSave').disabled = false;
+      $('sCity').value = '';
+    });
+  });
+
   /* ---------- delete ---------- */
   $('deleteBtn').addEventListener('click', function () {
     if (!editing) return;

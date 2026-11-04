@@ -543,6 +543,101 @@
     if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLB();
   });
 
+
+  /* ============================================================
+     RECENT ORDERS
+
+     Driven entirely by data/orders.json, which Studio writes when she
+     logs a real sale. No entries means no popup, so it can never claim
+     a sale that did not happen. No customer names either, only a city.
+     ============================================================ */
+  function ago(iso) {
+    var then = new Date(iso).getTime();
+    if (!then) return '';
+    var mins = Math.round((Date.now() - then) / 60000);
+    if (mins < 2)    return 'just now';
+    if (mins < 60)   return mins + ' minutes ago';
+    var hrs = Math.round(mins / 60);
+    if (hrs < 24)    return hrs === 1 ? 'an hour ago' : hrs + ' hours ago';
+    var days = Math.round(hrs / 24);
+    if (days === 1)  return 'yesterday';
+    if (days < 7)    return days + ' days ago';
+    var wks = Math.round(days / 7);
+    return wks === 1 ? 'last week' : wks + ' weeks ago';
+  }
+
+  function initRecentOrders() {
+    var pop = document.getElementById('salePop');
+    if (!pop) return;
+
+    // a visitor who closes it is not shown it again this visit
+    var dismissed = false;
+    try { dismissed = sessionStorage.getItem('byjooy.sale') === 'off'; } catch (e) {}
+    if (dismissed) return;
+
+    var path = (CFG.ORDERS_PATH || 'data/orders.json') + '?t=' + Date.now();
+    fetch(path, { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (list) {
+        if (!Array.isArray(list) || !list.length) return;
+
+        var MONTH = 1000 * 60 * 60 * 24 * 45;
+        var fresh = list.filter(function (o) {
+          if (!o || !o.slug || !o.at) return false;
+          var t = new Date(o.at).getTime();
+          if (!t || Date.now() - t > MONTH) return false;
+          return !!P.find(function (p) { return p.slug === o.slug; });
+        }).sort(function (a, b) { return new Date(b.at) - new Date(a.at); });
+
+        if (!fresh.length) return;
+        run(fresh);
+      })
+      .catch(function () { /* no feed, no popup */ });
+
+    function run(orders) {
+      var i = 0;
+      var hideTimer, nextTimer;
+
+      function show() {
+        var o = orders[i % orders.length];
+        i++;
+        var p = P.find(function (x) { return x.slug === o.slug; });
+        if (!p) { queue(1000); return; }
+
+        document.getElementById('saleImg').src = thumb(p, 0);
+        document.getElementById('saleImg').alt = p.name;
+        document.getElementById('saleWho').textContent =
+          o.city ? 'Someone in ' + o.city : 'Someone';
+        document.getElementById('saleItem').textContent = p.name;
+        document.getElementById('saleWhen').textContent = ago(o.at);
+        document.getElementById('saleLink').onclick = function (e) {
+          e.preventDefault();
+          hide();
+          openLB(p);
+        };
+
+        pop.hidden = false;
+        requestAnimationFrame(function () { pop.classList.add('is-on'); });
+        hideTimer = setTimeout(function () { hide(); queue(22000); }, 7000);
+      }
+
+      function hide() {
+        clearTimeout(hideTimer);
+        pop.classList.remove('is-on');
+      }
+
+      function queue(ms) { nextTimer = setTimeout(show, ms); }
+
+      document.getElementById('saleClose').addEventListener('click', function () {
+        hide();
+        clearTimeout(nextTimer);
+        try { sessionStorage.setItem('byjooy.sale', 'off'); } catch (e) {}
+      });
+
+      queue(9000);
+    }
+  }
+
   /* ============================================================
      CURSOR + MAGNET + NAV
      ============================================================ */
@@ -651,6 +746,7 @@
     initMagnet();
     initNav();
     buildFootStrip();
+    initRecentOrders();
     initFooter();
     revealAll();
     ScrollTrigger.refresh();

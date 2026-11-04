@@ -16,6 +16,7 @@ window.BYJOOY_CONFIG = {
 
   // Where the dashboard reads and writes the catalogue
   DATA_PATH: 'data/products.json',
+  ORDERS_PATH: 'data/orders.json',
   IMAGE_DIR: 'assets/img',
   VIDEO_DIR: 'assets/video/pieces',
 

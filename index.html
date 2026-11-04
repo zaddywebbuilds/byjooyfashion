@@ -88,6 +88,20 @@
 })();
 </script>
 
+<!-- Recent orders. Populated only from sales logged in Studio, so it stays
+     hidden until there are real ones. -->
+<aside class="sale" id="salePop" hidden aria-live="polite">
+  <button class="sale__x" id="saleClose" type="button" aria-label="Dismiss">&times;</button>
+  <a class="sale__link" id="saleLink" href="#collection">
+    <span class="sale__shot"><img id="saleImg" src="" alt="" width="60" height="80"></span>
+    <span class="sale__text">
+      <span class="sale__who" id="saleWho"></span>
+      <span class="sale__item" id="saleItem"></span>
+      <span class="sale__when" id="saleWhen"></span>
+    </span>
+  </a>
+</aside>
+
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor" id="cursor" aria-hidden="true"><span></span></div>
 

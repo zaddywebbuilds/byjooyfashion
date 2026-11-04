@@ -608,3 +608,46 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   *{animation-duration:.001s!important;transition-duration:.001s!important}
   .rv{opacity:1;transform:none}
 }
+
+/* ============================================================
+   RECENT ORDERS
+   Only ever shows sales logged in Studio, so it stays hidden
+   until there are real ones to show.
+   ============================================================ */
+.sale{
+  position:fixed;left:var(--pad);bottom:22px;z-index:700;
+  width:min(330px,calc(100vw - 32px));
+  display:flex;align-items:stretch;
+  background:var(--bone);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 26px 54px -26px rgba(20,15,17,.45);
+  overflow:hidden;
+  transform:translateY(18px);opacity:0;pointer-events:none;
+  transition:transform .55s var(--ease),opacity .55s var(--ease);
+}
+.sale.is-on{transform:translateY(0);opacity:1;pointer-events:auto}
+.sale__link{display:flex;align-items:center;gap:12px;padding:10px;flex:1;min-width:0}
+.sale__shot{
+  flex:0 0 auto;width:52px;height:68px;border-radius:9px;overflow:hidden;
+  background:var(--bone-2);
+}
+.sale__shot img{width:100%;height:100%;object-fit:cover;display:block}
+.sale__text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sale__who{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--rose-dp)}
+.sale__item{
+  font-family:var(--display);font-size:16px;line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sale__when{font-size:11.5px;color:rgba(20,15,17,.45)}
+.sale__x{
+  flex:0 0 auto;width:30px;align-self:flex-start;
+  font-size:19px;line-height:1;color:rgba(20,15,17,.35);
+  padding:8px 6px 0 0;
+}
+.sale__x:hover{color:var(--ink)}
+
+@media (max-width:600px){
+  .sale{left:16px;right:16px;width:auto;bottom:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  .sale{transition:opacity .2s}
+}

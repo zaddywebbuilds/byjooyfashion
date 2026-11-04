@@ -8,7 +8,7 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="icon" href="../favicon-32.png" sizes="32x32">
 <link rel="stylesheet" href="../assets/fonts/fonts.css?v=2">
-<link rel="stylesheet" href="admin.css?v=3">
+<link rel="stylesheet" href="admin.css?v=4">
 </head>
 <body>
 
@@ -72,6 +72,7 @@
       <span><strong id="statHidden">0</strong> hidden</span>
     </div>
     <div class="bar__actions">
+      <button class="btn btn--ghost btn--sm" id="saleBtn" type="button">Log a sale</button>
       <button class="btn btn--solid btn--sm" id="newBtn" type="button">+ New piece</button>
     </div>
   </div>
@@ -181,12 +182,71 @@
   </form>
 </div>
 
+<!-- ============ LOG A SALE ============ -->
+<div class="sheet" id="saleSheet" hidden>
+  <div class="sheet__scrim" id="saleScrim"></div>
+  <form class="sheet__panel" id="saleForm">
+    <div class="sheet__head">
+      <h2>Log a sale</h2>
+      <button class="sheet__x" type="button" id="saleFormClose" aria-label="Close">&times;</button>
+    </div>
+
+    <div class="sheet__body">
+      <p class="field__hint">
+        After an order comes in on WhatsApp, record it here and the website
+        will mention it quietly to the next few visitors. No customer name is
+        ever shown or stored, only the city.
+      </p>
+
+      <label>
+        <span>Which piece</span>
+        <select id="sPiece" required></select>
+      </label>
+
+      <label>
+        <span>City</span>
+        <input type="text" id="sCity" required placeholder="Lagos" list="cityList">
+        <datalist id="cityList">
+          <option value="Lagos"><option value="Abuja"><option value="Port Harcourt">
+          <option value="Ibadan"><option value="Benin City"><option value="Enugu">
+          <option value="Kano"><option value="London"><option value="Houston">
+          <option value="New York"><option value="Atlanta"><option value="Toronto">
+        </datalist>
+      </label>
+
+      <label>
+        <span>When</span>
+        <select id="sWhen">
+          <option value="0">Just now</option>
+          <option value="2">A couple of hours ago</option>
+          <option value="6">Earlier today</option>
+          <option value="24">Yesterday</option>
+          <option value="72">A few days ago</option>
+        </select>
+      </label>
+
+      <p class="gate__err" id="saleErr" hidden></p>
+
+      <div class="field">
+        <span class="field__label">Logged recently</span>
+        <div class="salelog" id="saleLog"></div>
+      </div>
+    </div>
+
+    <div class="sheet__foot">
+      <span class="spacer"></span>
+      <button class="btn btn--ghost btn--sm" type="button" id="saleCancel">Close</button>
+      <button class="btn btn--solid btn--sm" type="submit" id="saleSave">Add it</button>
+    </div>
+  </form>
+</div>
+
 <div class="toast" id="toast" hidden></div>
 
-<script src="../assets/js/config.js?v=3"></script>
+<script src="../assets/js/config.js?v=4"></script>
 <script src="../assets/js/products.js"></script>
-<script src="github.js?v=3"></script>
-<script src="images.js?v=3"></script>
-<script src="admin.js?v=3"></script>
+<script src="github.js?v=4"></script>
+<script src="images.js?v=4"></script>
+<script src="admin.js?v=4"></script>
 </body>
 </html>

@@ -83,6 +83,15 @@ be asked again on that phone or laptop.
 - **Move up** and **Move down** change the order on the site.
 - **Delete** removes a piece from the website. The photos stay in the
   repository, so it can be undone.
+- **Log a sale** records an order you have actually had. Pick the piece,
+  type the city, say roughly when. The website then mentions it quietly in
+  the corner to the next few visitors: *Someone in Lagos ordered the Adire
+  Boubou, 3 hours ago*. No customer name is shown or stored, only a city.
+
+  The popup only ever shows sales logged here. With nothing logged it stays
+  hidden, and entries older than about six weeks drop off on their own. Log
+  each WhatsApp order as it comes in and it keeps itself current.
+
 - **Video** is optional, one short clip per piece, shown first when someone
   opens that style. Keep it under 12MB. There is no way to shrink a video in
   the browser, and every upload stays in the repository permanently, so a
